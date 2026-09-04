@@ -8,7 +8,7 @@ Built for **SEN106/216: Introduction to Web Technologies** (Group 7).
 
 - **Lead:** samkiel — [@samkiell](https://github.com/samkiell)
 - **Co-lead:** Abba — [@abbasthelittlemonstee](https://github.com/abbasthelittlemonstee)
-- Full contributor list in [CONTRIBUTORS.md](./CONTRIBUTORS.md) *(or list below once roles are assigned)*
+- Full contributor list in [CONTRIBUTORS.md](./CONTRIBUTORS.md)
 
 - 
 ## Tech Stack
