@@ -1,20 +1,20 @@
-/* Nordic Slate & Mint Teal Theme */
+/* Sleek Dark Obsidian Theme */
 :root {
-  --primary: #0f172a;          /* Deep Slate */
-  --navbar-bg: #090d16;        /* Deep Charcoal Slate */
-  --accent: #0d9488;           /* Mint Teal */
-  --accent-hover: #0f766e;     /* Deep Mint Teal */
-  --accent-light: #f0fdf4;     /* Soft Mint Tint */
-  --success: #059669;          /* Fresh Mint Green */
-  --warning: #d97706;          /* Warm Amber */
-  --danger: #e11d48;           /* Rose Red */
-  --bg: #f8fafc;               /* Crisp Cool Slate Light Background */
-  --card-bg: #ffffff;          /* Pure White */
-  --text: #0f172a;             /* High-contrast Slate Text */
-  --text-muted: #64748b;       /* Muted Slate Grey */
-  --border: #e2e8f0;           /* Soft Subtle Border */
+  --primary: #f8fafc;          /* High Contrast Crisp Heading Text */
+  --navbar-bg: #070a12;        /* Dark Obsidian Navbar */
+  --accent: #14b8a6;           /* Bright Mint Teal */
+  --accent-hover: #0d9488;     /* Deep Mint Teal */
+  --accent-light: rgba(20, 184, 166, 0.15); /* Soft Mint Tint */
+  --success: #10b981;          /* Fresh Mint Green */
+  --warning: #f59e0b;          /* Vibrant Amber */
+  --danger: #f43f5e;           /* Rose Red */
+  --bg: #0b0f19;               /* Deep Obsidian Dark Background */
+  --card-bg: #151c2c;          /* Dark Slate Card Background */
+  --text: #e2e8f0;             /* High-contrast Light Text */
+  --text-muted: #94a3b8;       /* Muted Slate Grey */
+  --border: #1e293b;           /* Dark Subtle Border */
   --radius: 12px;
-  --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+  --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -190,8 +190,8 @@ body {
 
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-.btn-outline { border: 1px solid var(--border); color: var(--text); background: #fff; }
-.btn-outline:hover { background: #f1f5f9; border-color: #cbd5e1; }
+.btn-outline { border: 1px solid var(--border); color: var(--text); background: #1e293b; }
+.btn-outline:hover { background: #334155; border-color: #475569; color: #fff; }
 .btn-warning { background: var(--warning); color: #fff; }
 .btn-warning:hover { background: #b45309; }
 .btn-success { background: var(--success); color: #fff; }
@@ -256,7 +256,7 @@ input, textarea, select {
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 0.9rem;
-  background: #f8fafc;
+  background: #0f172a;
   color: var(--text);
   outline: none;
   transition: all 0.15s ease;
@@ -264,8 +264,8 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
   border-color: var(--accent);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  background: #1e293b;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
 }
 
 /* Feed & Filtering */
@@ -285,7 +285,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .feed-card {
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px;
@@ -301,7 +301,7 @@ input:focus, textarea:focus, select:focus {
 
 .feed-card.missing { border-left: 4px solid var(--warning); }
 .feed-card.found { border-left: 4px solid var(--accent); }
-.feed-card.resolved { opacity: 0.55; background: #f8fafc; }
+.feed-card.resolved { opacity: 0.55; background: #0f172a; }
 
 .card-header {
   display: flex;
@@ -313,7 +313,7 @@ input:focus, textarea:focus, select:focus {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--navbar-bg);
+  background: var(--border);
   color: #fff;
   display: flex;
   align-items: center;
@@ -357,7 +357,7 @@ input:focus, textarea:focus, select:focus {
   justify-content: space-between;
   gap: 10px;
   padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border);
   flex-wrap: wrap;
 }
 
