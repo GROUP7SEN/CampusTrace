@@ -3,85 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OAU Lost & Found Portal</title>
+  <title>CampusTrace - OAU Lost & Found Portal</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Navigation -->
+  <!-- Minimal Header / Navbar -->
   <nav class="navbar">
-    <div class="logo">
-      <img src="logo.png" alt="OAU Logo" class="school-logo" />
-      <span>OAU Lost & Found</span>
-    </div>
-    <div class="nav-right">
-      <span id="user-display"></span>
-      <button id="logoutBtn" class="logout-btn">Logout</button>
+    <a href="index.html" class="brand">
+      <img src="assets/logo.png" alt="OAU Logo" />
+      <span>CampusTrace</span>
+    </a>
+    <button class="hamburger-toggle" id="hamburger-btn" aria-label="Toggle Navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="login.html" class="btn btn-outline" id="nav-login">Login</a>
+      <a href="register.html" class="btn btn-primary" id="nav-register">Register</a>
+      <a href="dashboard.html" class="btn btn-primary" id="nav-dash" style="display: none;">Dashboard</a>
     </div>
   </nav>
 
-  <main class="main-container">
+  <!-- Hero Section -->
+  <header class="hero">
+    <h1>Lost Something on Campus?</h1>
+    <p>CampusTrace is the centralized lost & found portal for OAU students. Report missing items, post found belongings, and reconnect items with their owners instantly.</p>
+    <div class="cta-group">
+      <a href="dashboard.html" class="btn btn-primary">Go to Campus Feed</a>
+      <a href="login.html" class="btn btn-outline">Sign In to Post</a>
+    </div>
+  </header>
+
+  <!-- Quick Feature Breakdown -->
+  <main class="container">
+    <div class="card" style="text-align: center;">
+      <h2>How CampusTrace Works</h2>
+      <p class="subtitle" style="margin-bottom: 0;">Simple 3-step recovery process</p>
+    </div>
     
-    <!-- Report Missing Item Section -->
-    <section class="card-section" id="report-lost-section">
-      <h2>Report a Missing Item</h2>
-      <form id="report-lost-form">
-        <label for="lost-title"><strong>Item Title:</strong></label>
-        <input type="text" id="lost-title" placeholder="e.g., Black Leather Wallet" required />
-
-        <label for="lost-desc"><strong>Description & Last Seen Location:</strong></label>
-        <textarea id="lost-desc" placeholder="Provide details like brand, color, or where you lost it..." required></textarea>
-
-        <button type="submit" class="warning-btn">Post Missing Item</button>
-      </form>
-    </section>
-
-    <!-- Report Found Item Section -->
-    <section class="card-section" id="report-found-section">
-      <h2>Report a Found Item</h2>
-      <form id="report-found-form">
-        <label for="found-title"><strong>Item Title:</strong></label>
-        <input type="text" id="found-title" placeholder="e.g., Student ID Card" required />
-
-        <label for="found-desc"><strong>Description & Pickup Point:</strong></label>
-        <textarea id="found-desc" placeholder="Where did you find it? Where can the owner collect it?" required></textarea>
-
-        <label for="found-img"><strong>Upload Photo:</strong></label>
-        <input type="file" id="found-img" accept="image/*" required />
-        <div id="imagePreviewContainer" style="display:none; margin-top: 10px;">
-          <img id="imagePreview" src="" alt="Preview" style="max-width: 100%; height: auto; border-radius: 8px;" />
-        </div>
-
-        <button type="submit" class="success-btn">Post Found Item</button>
-      </form>
-    </section>
-
-    <!-- FYP Feed & Search/Filter Section -->
-    <section class="card-section" id="fyp-section">
-      <h2>Campus Feed (FYP)</h2>
-      
-      <!-- Search & Filter Controls -->
-      <div class="filter-container">
-        <input type="text" id="search-input" placeholder="🔍 Search items (e.g., Keys, ID, Wallet)..." />
-        <select id="category-filter">
-          <option value="all">All Posts</option>
-          <option value="missing">Missing Items Only</option>
-          <option value="found">Found Items Only</option>
-        </select>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+      <div class="card" style="text-align: center; margin-bottom: 0;">
+        <div style="font-size: 2rem; margin-bottom: 8px;">📢</div>
+        <h3>1. Post Details</h3>
+        <p class="subtitle">Submit missing or found item information with a photo.</p>
       </div>
-
-      <div class="feed-container">
-        <!-- Dynamic posts load here -->
+      <div class="card" style="text-align: center; margin-bottom: 0;">
+        <div style="font-size: 2rem; margin-bottom: 8px;">🔍</div>
+        <h3>2. Search & Filter</h3>
+        <p class="subtitle">Browse real-time listings by category or keywords.</p>
       </div>
-    </section>
-
+      <div class="card" style="text-align: center; margin-bottom: 0;">
+        <div style="font-size: 2rem; margin-bottom: 8px;">✉️</div>
+        <h3>3. Direct Contact</h3>
+        <p class="subtitle">Reach out via school email to verify and return items.</p>
+      </div>
+    </div>
   </main>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-brand-logo">
+          <img src="assets/logo.png" alt="CampusTrace Logo" />
+          <span>CampusTrace</span>
+        </a>
+        <p>The official lost & found portal for Obafemi Awolowo University students and staff.</p>
+      </div>
 
-  <script src="script.js"></script>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Campus Feed</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Campus Support</h4>
+        <p>Obafemi Awolowo University, Ile-Ife</p>
+        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 CampusTrace - OAU Lost & Found Portal. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Hamburger Menu Toggle
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const navMenu = document.getElementById('nav-menu');
+    if (hamburgerBtn && navMenu) {
+      hamburgerBtn.addEventListener('click', () => {
+        hamburgerBtn.classList.toggle('open');
+        navMenu.classList.toggle('active');
+      });
+    }
+
+    // Show Dashboard button if user is already logged in
+    const userEmail = localStorage.getItem('userEmail');
+    if (userEmail) {
+      document.getElementById('nav-login').style.display = 'none';
+      document.getElementById('nav-register').style.display = 'none';
+      document.getElementById('nav-dash').style.display = 'inline-block';
+    }
+  </script>
 </body>
 </html>

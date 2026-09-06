@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - CampusTrace</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Dashboard Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.png" alt="OAU Logo" />
+      <span>CampusTrace</span>
+    </a>
+    <button class="hamburger-toggle" id="hamburger-btn" aria-label="Toggle Navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="index.html">Home</a>
+      <span id="user-display" style="font-size: 0.85rem; opacity: 0.9; color: #cbd5e1;"></span>
+      <button id="logoutBtn" class="btn btn-danger" style="padding: 6px 14px; font-size: 0.8rem;">Logout</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    
+    <!-- Report Missing Item Form -->
+    <section class="card" id="report-lost-section">
+      <h2>Report a Missing Item</h2>
+      <p class="subtitle">Provide details so fellow students can help locate your item.</p>
+
+      <form id="report-lost-form">
+        <div class="form-group">
+          <label for="lost-title">Item Name</label>
+          <input type="text" id="lost-title" placeholder="e.g. Black HP Laptop Bag" required />
+        </div>
+
+        <div class="form-group">
+          <label for="lost-desc">Description & Last Seen Location</label>
+          <textarea id="lost-desc" rows="3" placeholder="Provide distinct features, color, brand, or location last seen..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Publish Missing Report</button>
+      </form>
+    </section>
+
+    <!-- Report Found Item Form -->
+    <section class="card" id="report-found-section">
+      <h2>Report a Found Item</h2>
+      <p class="subtitle">Found an item? Post it with a photo to return it to the owner.</p>
+
+      <form id="report-found-form">
+        <div class="form-group">
+          <label for="found-title">Item Name</label>
+          <input type="text" id="found-title" placeholder="e.g. Student ID Card (John Doe)" required />
+        </div>
+
+        <div class="form-group">
+          <label for="found-desc">Description & Pickup Location</label>
+          <textarea id="found-desc" rows="3" placeholder="Where did you find it? Where can the owner collect it?" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="found-img">Upload Photo</label>
+          <input type="file" id="found-img" accept="image/*" required />
+          <div id="imagePreviewContainer" style="display: none; margin-top: 10px;">
+            <img id="imagePreview" src="" alt="Preview" class="post-img" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success" id="submit-found-btn">Publish Found Item</button>
+      </form>
+    </section>
+
+    <!-- Campus Real-time Feed & Filters -->
+    <section class="card" id="fyp-section">
+      <h2>Campus Feed</h2>
+      <p class="subtitle">Live listing of missing and found items across campus.</p>
+      
+      <!-- Filter controls -->
+      <div class="filter-bar">
+        <input type="text" id="search-input" placeholder="🔍 Search by keyword (e.g. Keys, Wallet, ID)..." />
+        <select id="category-filter">
+          <option value="all">All Posts</option>
+          <option value="missing">Missing Items</option>
+          <option value="found">Found Items</option>
+        </select>
+      </div>
+
+      <!-- Feed Container -->
+      <div class="feed-list" id="feed-container">
+        <!-- Posts load dynamically from Firestore -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-brand-logo">
+          <img src="assets/logo.png" alt="CampusTrace Logo" />
+          <span>CampusTrace</span>
+        </a>
+        <p>The official lost & found portal for Obafemi Awolowo University students and staff.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Campus Feed</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Campus Support</h4>
+        <p>Obafemi Awolowo University, Ile-Ife</p>
+        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 CampusTrace - OAU Lost & Found Portal. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+  <!-- App Script -->
+  <script src="script.js"></script>
+</body>
+</html>

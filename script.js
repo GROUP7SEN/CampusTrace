@@ -1,4 +1,4 @@
-// Firebase Configuration
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyD1A7PCfIIu-ja3Langp5V_kLXEPDCbbsE",
   authDomain: "oau-lost-and-found.firebaseapp.com",
@@ -13,99 +13,107 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// Get Saved User Details
-const currentUserName = localStorage.getItem('userName') || 'Anonymous Student';
+// Hamburger Mobile Menu Toggle
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const navMenu = document.getElementById('nav-menu');
+  if (hamburgerBtn && navMenu) {
+    hamburgerBtn.addEventListener('click', () => {
+      hamburgerBtn.classList.toggle('open');
+      navMenu.classList.toggle('active');
+    });
+  }
+});
+
+// Auth Guard & User Session
+const currentUserName = localStorage.getItem('userName') || '';
 const currentUserEmail = localStorage.getItem('userEmail') || '';
 const currentUserMatric = localStorage.getItem('userMatric') || '';
 
-if (!currentUserEmail) {
+if (!currentUserEmail && window.location.pathname.includes('dashboard.html')) {
   window.location.href = 'login.html';
 }
 
 const userDisplay = document.getElementById('user-display');
-if (userDisplay) {
+if (userDisplay && currentUserName) {
   userDisplay.textContent = `${currentUserName} (${currentUserMatric})`;
 }
 
-function getInitials(name) {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-}
+// Helpers
+const getInitials = name => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
 let localPostsCache = [];
 
-// Real-Time Firestore Listener
-db.collection('portal_items').onSnapshot((snapshot) => {
-  localPostsCache = [];
-  snapshot.docs.forEach((doc) => {
-    localPostsCache.push({ id: doc.id, ...doc.data() });
+// Real-time Firestore Feed Listener
+if (document.getElementById('feed-container')) {
+  db.collection('portal_items').onSnapshot(snapshot => {
+    localPostsCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderFeed();
   });
-  renderFeed();
-});
+}
 
-// Render Feed with Filtering and Custom Controls
+// Render Posts with Search and Category Filtering
 function renderFeed() {
-  const feedContainer = document.querySelector('.feed-container');
-  const searchQuery = document.getElementById('search-input')?.value.toLowerCase() || '';
+  const feedContainer = document.getElementById('feed-container');
+  const searchQuery = (document.getElementById('search-input')?.value || '').toLowerCase();
   const filterCategory = document.getElementById('category-filter')?.value || 'all';
 
   if (!feedContainer) return;
-  feedContainer.innerHTML = '';
 
-  const filteredPosts = localPostsCache.filter(post => {
+  const posts = localPostsCache.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery) || post.desc.toLowerCase().includes(searchQuery);
     const matchesCategory = filterCategory === 'all' || post.type === filterCategory;
     return matchesSearch && matchesCategory;
   });
 
-  if (filteredPosts.length === 0) {
-    feedContainer.innerHTML = `<p class="no-posts">No items match your search criteria.</p>`;
+  if (posts.length === 0) {
+    feedContainer.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding: 20px;">No items found matching your criteria.</p>`;
     return;
   }
 
-  filteredPosts.forEach(post => {
+  feedContainer.innerHTML = posts.map(post => {
     const isOwner = post.email === currentUserEmail;
-    const card = document.createElement('div');
-    card.className = `feed-card ${post.type}-card ${post.resolved ? 'resolved-card' : ''}`;
-
-    card.innerHTML = `
-      <div class="card-header">
-        <div class="user-avatar ${post.type}-avatar">${post.initials}</div>
-        <div class="user-info">
-          <strong>${post.userName}</strong>
-          <span class="post-time">${post.type.toUpperCase()} • ${post.statusText || 'Active'}</span>
+    return `
+      <div class="feed-card ${post.type} ${post.resolved ? 'resolved' : ''}">
+        <div class="card-header">
+          <div class="avatar">${post.initials}</div>
+          <div class="meta">
+            <strong>${post.userName}</strong>
+            <span>${post.type.toUpperCase()} • ${post.statusText || 'Active'}</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h3>${post.title} ${post.resolved ? '<span class="badge badge-resolved">Resolved</span>' : ''}</h3>
+          <p>${post.desc}</p>
+          ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img" alt="Item Image" />` : ''}
+        </div>
+        <div class="card-footer">
+          <a href="mailto:${post.email}?subject=Regarding ${post.title} on CampusTrace" class="btn btn-outline" style="font-size:0.8rem;">
+            ✉️ Contact Owner
+          </a>
+          <div style="display:flex; gap:8px;">
+            ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}')" class="btn btn-primary" style="font-size:0.8rem;">Mark Resolved</button>` : ''}
+            ${isOwner ? `<button onclick="deletePost('${post.id}')" class="btn btn-danger" style="font-size:0.8rem;">Delete</button>` : ''}
+          </div>
         </div>
       </div>
-      <div class="card-body">
-        <h3>${post.title} ${post.resolved ? '<span class="badge-resolved">(Resolved)</span>' : ''}</h3>
-        <p>${post.desc}</p>
-        ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-image" alt="Item Image" />` : ''}
-      </div>
-      <div class="card-footer">
-        <a href="mailto:${post.email}?subject=Regarding ${post.title} on OAU Lost Portal" class="email-btn">
-          ✉️ Contact Owner
-        </a>
-        ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}')" class="resolve-btn">Mark Resolved</button>` : ''}
-        ${isOwner ? `<button onclick="deletePost('${post.id}')" class="delete-btn">Delete</button>` : ''}
-      </div>
     `;
-    feedContainer.appendChild(card);
-  });
+  }).join('');
 }
 
-// Search and Filter Input Events
+// Search and Filter Listeners
 document.getElementById('search-input')?.addEventListener('input', renderFeed);
 document.getElementById('category-filter')?.addEventListener('change', renderFeed);
 
-// Submit Missing Item
+// Submit Missing Item Report
 document.getElementById('report-lost-form')?.addEventListener('submit', function (e) {
   e.preventDefault();
-  const title = document.getElementById('lost-title').value;
-  const desc = document.getElementById('lost-desc').value;
+  const title = document.getElementById('lost-title').value.trim();
+  const desc = document.getElementById('lost-desc').value.trim();
 
   db.collection('portal_items').add({
     type: 'missing',
-    title: title,
-    desc: desc,
+    title, desc,
     userName: currentUserName,
     email: currentUserEmail,
     initials: getInitials(currentUserName),
@@ -113,30 +121,31 @@ document.getElementById('report-lost-form')?.addEventListener('submit', function
     statusText: 'Missing Item',
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   }).then(() => {
-    alert('Missing item report published!');
+    alert('Missing item published!');
     this.reset();
   });
 });
 
-// Submit Found Item with Firebase Storage Upload
+// Submit Found Item Report (with Firebase Storage Image Upload)
 document.getElementById('report-found-form')?.addEventListener('submit', function (e) {
   e.preventDefault();
-  const title = document.getElementById('found-title').value;
-  const desc = document.getElementById('found-desc').value;
+  const title = document.getElementById('found-title').value.trim();
+  const desc = document.getElementById('found-desc').value.trim();
   const imageFile = document.getElementById('found-img').files[0];
+  const submitBtn = document.getElementById('submit-found-btn');
 
-  if (!imageFile) return alert('Please select a photo of the item.');
+  if (!imageFile) return alert('Please attach a photo of the found item.');
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Uploading Photo...';
 
   const storageRef = storage.ref(`found_items/${Date.now()}_${imageFile.name}`);
-
   storageRef.put(imageFile)
-    .then(snapshot => snapshot.ref.getDownloadURL())
-    .then(downloadURL => {
+    .then(snap => snap.ref.getDownloadURL())
+    .then(imageUrl => {
       return db.collection('portal_items').add({
         type: 'found',
-        title: title,
-        desc: desc,
-        imageUrl: downloadURL,
+        title, desc, imageUrl,
         userName: currentUserName,
         email: currentUserEmail,
         initials: getInitials(currentUserName),
@@ -146,22 +155,26 @@ document.getElementById('report-found-form')?.addEventListener('submit', functio
       });
     })
     .then(() => {
-      alert('Found item report published with image!');
+      alert('Found item published successfully!');
       this.reset();
       document.getElementById('imagePreviewContainer').style.display = 'none';
     })
     .catch(err => {
       console.error(err);
-      alert('Error uploading image. Make sure Storage is enabled in Firebase Console.');
+      alert('Error uploading image. Please try again.');
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Publish Found Item';
     });
 });
 
-// Photo Preview
+// File Preview Listener
 document.getElementById('found-img')?.addEventListener('change', function (e) {
   const file = e.target.files[0];
   if (file) {
     const reader = new FileReader();
-    reader.onload = function (evt) {
+    reader.onload = evt => {
       document.getElementById('imagePreview').src = evt.target.result;
       document.getElementById('imagePreviewContainer').style.display = 'block';
     };
@@ -169,22 +182,22 @@ document.getElementById('found-img')?.addEventListener('change', function (e) {
   }
 });
 
-// Mark Item as Resolved
+// Mark Post as Resolved
 window.markResolved = function(id) {
   db.collection('portal_items').doc(id).update({ resolved: true })
-    .then(() => alert('Item status updated to Resolved!'));
+    .then(() => alert('Item status updated to Resolved.'));
 };
 
 // Delete Post
 window.deletePost = function(id) {
-  if (confirm('Are you sure you want to delete this post?')) {
+  if (confirm('Delete this post permanently?')) {
     db.collection('portal_items').doc(id).delete()
-      .then(() => alert('Post deleted successfully!'));
+      .then(() => alert('Post deleted.'));
   }
 };
 
 // Logout Handler
-document.getElementById('logoutBtn')?.addEventListener('click', function () {
+document.getElementById('logoutBtn')?.addEventListener('click', () => {
   localStorage.clear();
   window.location.href = 'login.html';
 });

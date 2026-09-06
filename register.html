@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - CampusTrace</title>
+  <title>Register - CampusTrace</title>
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -22,37 +22,42 @@
     </button>
     <div class="nav-links" id="nav-menu">
       <a href="index.html">Home</a>
-      <a href="register.html" class="btn btn-primary">Register</a>
+      <a href="login.html" class="btn btn-outline">Login</a>
     </div>
   </nav>
 
-  <!-- Login Container -->
+  <!-- Registration Container -->
   <main class="container" style="max-width: 480px;">
     <section class="card">
-      <h2>Student Sign In</h2>
-      <p class="subtitle">Enter your OAU details to access the portal.</p>
+      <h2>Student Registration</h2>
+      <p class="subtitle">Create an account to report and claim lost items.</p>
 
-      <form id="login-form">
+      <form id="register-form">
         <div class="form-group">
-          <label for="login-name">Full Name</label>
-          <input type="text" id="login-name" placeholder="e.g. Samkiel John" required />
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" placeholder="e.g. Samkiel John" required />
         </div>
 
         <div class="form-group">
-          <label for="login-matric">Matriculation Number</label>
-          <input type="text" id="login-matric" placeholder="e.g. SEN/2021/001" required />
+          <label for="reg-matric">Matriculation Number</label>
+          <input type="text" id="reg-matric" placeholder="e.g. SEN/2021/001" required />
         </div>
 
         <div class="form-group">
-          <label for="login-email">School Email</label>
-          <input type="email" id="login-email" placeholder="e.g. student@student.oau.edu.ng" required />
+          <label for="reg-email">School Email</label>
+          <input type="email" id="reg-email" placeholder="e.g. student@student.oau.edu.ng" required />
         </div>
 
-        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sign In</button>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="Create a password" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Register Account</button>
       </form>
 
       <p class="subtitle" style="text-align: center; margin-top: 16px; margin-bottom: 0;">
-        Need an account? <a href="register.html" style="color: var(--accent); font-weight: 600;">Register here</a>
+        Already have an account? <a href="login.html" style="color: var(--accent); font-weight: 600;">Sign In</a>
       </p>
     </section>
   </main>
@@ -101,18 +106,18 @@
       });
     }
 
-    // Handle Login Form Submission & Save details
-    document.getElementById('login-form').addEventListener('submit', function (e) {
+    // Save credentials to session storage and redirect to dashboard
+    document.getElementById('register-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      const name = document.getElementById('login-name').value.trim();
-      const matric = document.getElementById('login-matric').value.trim();
-      const email = document.getElementById('login-email').value.trim();
+      const name = document.getElementById('reg-name').value.trim();
+      const matric = document.getElementById('reg-matric').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
 
       localStorage.setItem('userName', name);
       localStorage.setItem('userMatric', matric);
       localStorage.setItem('userEmail', email);
 
-      alert('Signed in successfully!');
+      alert('Registration successful! Welcome to CampusTrace.');
       window.location.href = 'dashboard.html';
     });
   </script>
