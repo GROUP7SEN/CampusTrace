@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About - CampusTrace OAU</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.png" alt="OAU Logo" />
+      <span>CampusTrace</span>
+    </a>
+    <button class="hamburger-toggle" id="hamburger-btn" aria-label="Toggle Navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Campus Feed</a>
+      <a href="about.html" class="active" style="color: var(--white); font-weight: 600;">About</a>
+      <a href="login.html" class="btn btn-outline">Login</a>
+      <a href="register.html" class="btn btn-primary">Register</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero" style="padding: 50px 20px 36px; text-align: center;">
+    <h1>About CampusTrace</h1>
+    <p style="max-width: 680px; margin: 0 auto;">
+      CampusTrace is a modern, student-centric Lost & Found web platform engineered specifically for Obafemi Awolowo University, Ile-Ife.
+    </p>
+  </header>
+
+  <main class="container" style="max-width: 900px; padding-bottom: 60px;">
+    
+    <!-- Section 1: Project Overview -->
+    <section class="card" style="margin-bottom: 24px;">
+      <h2>Project Overview & Purpose</h2>
+      <p style="color: var(--text-muted); line-height: 1.65; margin-bottom: 14px;">
+        CampusTrace was conceived and developed as a software engineering school project for Group 7 <strong>SEN106/216</strong> at Obafemi Awolowo University, Ile-Ife, led by <a href="https://samkiel.dev" target="_blank" rel="noopener noreferrer" style="color: var(--accent); font-weight: 600; text-decoration: underline;">SAMKIEL</a>. Misplacing items such as student ID cards, wallets, department keys, chargers, or laptops across OAU's sprawling campus frequently leads to frustration and lost belongings.
+      </p>
+      <p style="color: var(--text-muted); line-height: 1.65;">
+        This platform replaces fragmented social media announcements with a single centralized portal where students, staff, and administrative units can rapidly post, discover, delegate, and claim lost belongings.
+      </p>
+    </section>
+
+    <!-- Section 2: Team & Repository -->
+    <section class="card" style="margin-bottom: 24px;">
+      <h2>Project Repository & Team</h2>
+      <p style="color: var(--text-muted); line-height: 1.65; margin-bottom: 14px;">
+        CampusTrace is maintained on GitHub under the <strong>GROUP7SEN</strong> organization.
+      </p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="https://github.com/GROUP7SEN/CampusTrace" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+          💻 GitHub Repository
+        </a>
+        <a href="https://github.com/GROUP7SEN/" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+          🏢 GROUP7SEN Organization
+        </a>
+        <a href="https://github.com/orgs/GROUP7SEN/people" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="font-size: 0.825rem; display: inline-flex; align-items: center; gap: 6px;">
+          👥 Organization Members
+        </a>
+      </div>
+    </section>
+
+    <!-- Section 2: Key Features & Capabilities -->
+    <section class="card" style="margin-bottom: 24px;">
+      <h2>Key Features & Core System Capabilities</h2>
+      <p class="subtitle">What makes CampusTrace an effective campus solution:</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 16px;">
+        
+        <div style="background: var(--surface-2); border: 1px solid var(--border); padding: 18px; border-radius: var(--radius);">
+          <div style="font-size: 1.5rem; margin-bottom: 8px;">📢</div>
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;">Instant Listing Publication</h3>
+          <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+            Post missing or found item reports in seconds complete with high-resolution photo uploads and automated image compression.
+          </p>
+        </div>
+
+        <div style="background: var(--surface-2); border: 1px solid var(--border); padding: 18px; border-radius: var(--radius);">
+          <div style="font-size: 1.5rem; margin-bottom: 8px;">💬</div>
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;">Direct WhatsApp & Email Contact</h3>
+          <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+            Connect finder and owner directly via pre-formatted WhatsApp chat links or direct mailto links according to the poster's chosen contact preference.
+          </p>
+        </div>
+
+        <div style="background: var(--surface-2); border: 1px solid var(--border); padding: 18px; border-radius: var(--radius);">
+          <div style="font-size: 1.5rem; margin-bottom: 8px;">🛡️</div>
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;">Administrative Unit Delegation</h3>
+          <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+            Assign item resolution to official university bodies such as OAU Central Security, Division of Student Affairs (DSA), or Department Secretariats.
+          </p>
+        </div>
+
+        <div style="background: var(--surface-2); border: 1px solid var(--border); padding: 18px; border-radius: var(--radius);">
+          <div style="font-size: 1.5rem; margin-bottom: 8px;">🔍</div>
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;">Smart Search & Filters</h3>
+          <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+            Filter feed listings instantly by item category (*Electronics, Student ID & Cards, Documents*), missing status, or keywords.
+          </p>
+        </div>
+
+        <div style="background: var(--surface-2); border: 1px solid var(--border); padding: 18px; border-radius: var(--radius);">
+          <div style="font-size: 1.5rem; margin-bottom: 8px;">🔒</div>
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;">User Management & Moderation</h3>
+          <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+            Comprehensive administrator portal equipped with user account controls, suspension enforcement, password resets, and audit logs.
+          </p>
+        </div>
+
+        <div style="background: var(--surface-2); border: 1px solid var(--border); padding: 18px; border-radius: var(--radius);">
+          <div style="font-size: 1.5rem; margin-bottom: 8px;">📱</div>
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 4px;">Responsive Mobile-First UI</h3>
+          <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+            Fully tailored for smartphones and tablets featuring mobile card table transformations, full-screen image lightboxes, and dark theme aesthetics.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 3: Technical Architecture -->
+    <section class="card">
+      <h2>Technology Stack & Implementation</h2>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px;">
+        <div style="flex: 1; min-width: 240px;">
+          <h4 style="color: var(--white); font-size: 0.85rem; margin-bottom: 6px;">Frontend Core</h4>
+          <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+            Vanilla HTML5, CSS3 Custom Properties (Pure Dark Minimal Design System), and Modular ES6+ JavaScript.
+          </p>
+        </div>
+        <div style="flex: 1; min-width: 240px;">
+          <h4 style="color: var(--white); font-size: 0.85rem; margin-bottom: 6px;">Database & Cloud</h4>
+          <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+            Firebase Firestore Real-Time NoSQL Database for live listing updates and Firebase Storage for image assets.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-brand-logo">
+          <img src="assets/logo.png" alt="CampusTrace Logo" />
+          <span>CampusTrace</span>
+        </a>
+        <p>The official lost & found portal for Obafemi Awolowo University students and staff.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="dashboard.html">Campus Feed</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><a href="https://github.com/GROUP7SEN/CampusTrace" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Campus Support</h4>
+        <p>Obafemi Awolowo University, Ile-Ife</p>
+        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 CampusTrace - OAU Lost & Found Portal. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

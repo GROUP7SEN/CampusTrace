@@ -151,8 +151,99 @@ window.showToast = function(message, type = 'success', duration = 3000) {
   }, duration);
 };
 
+// Real-Time Account Suspension Guard
+function checkUserAccountStatus() {
+  if (!currentUserEmail) return;
+
+  // 1. Check local storage status
+  const localAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+  const myLocalAccount = localAccounts.find(a => (a.email || '').toLowerCase() === currentUserEmail.toLowerCase());
+  
+  if (myLocalAccount && myLocalAccount.status === 'suspended') {
+    localStorage.setItem('userStatus', 'suspended');
+    applySuspensionUI();
+  }
+
+  // 2. Real-time Firestore sync
+  if (typeof db !== 'undefined') {
+    db.collection('users').doc(currentUserEmail.toLowerCase()).onSnapshot(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        if (data && data.status === 'suspended') {
+          localStorage.setItem('userStatus', 'suspended');
+          applySuspensionUI();
+        } else if (data && data.status === 'active') {
+          localStorage.setItem('userStatus', 'active');
+          removeSuspensionUI();
+        }
+      }
+    }, err => console.warn('Suspension listener fallback:', err));
+  }
+}
+
+function applySuspensionUI() {
+  const lostBtn = document.querySelector("button[onclick*='lost-modal']");
+  const foundBtn = document.querySelector("button[onclick*='found-modal']");
+  if (lostBtn) {
+    lostBtn.disabled = true;
+    lostBtn.style.opacity = '0.5';
+    lostBtn.style.cursor = 'not-allowed';
+    lostBtn.title = 'Account suspended by campus administration';
+  }
+  if (foundBtn) {
+    foundBtn.disabled = true;
+    foundBtn.style.opacity = '0.5';
+    foundBtn.style.cursor = 'not-allowed';
+    foundBtn.title = 'Account suspended by campus administration';
+  }
+
+  let banner = document.getElementById('suspension-banner');
+  if (!banner && document.querySelector('main')) {
+    banner = document.createElement('div');
+    banner.id = 'suspension-banner';
+    banner.style.background = 'rgba(239, 68, 68, 0.12)';
+    banner.style.border = '1px solid rgba(239, 68, 68, 0.35)';
+    banner.style.color = '#f87171';
+    banner.style.padding = '14px 18px';
+    banner.style.borderRadius = '8px';
+    banner.style.marginBottom = '20px';
+    banner.style.fontSize = '0.85rem';
+    banner.style.fontWeight = '500';
+    banner.style.display = 'flex';
+    banner.style.alignItems = 'center';
+    banner.style.gap = '10px';
+    banner.innerHTML = `🚫 <div><strong>Account Suspended:</strong> Your account has been suspended by campus administration. Reporting features are disabled. Please contact the Division of Student Affairs (DSA).</div>`;
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) mainContainer.insertBefore(banner, mainContainer.firstChild);
+  }
+}
+
+function removeSuspensionUI() {
+  const lostBtn = document.querySelector("button[onclick*='lost-modal']");
+  const foundBtn = document.querySelector("button[onclick*='found-modal']");
+  if (lostBtn) {
+    lostBtn.disabled = false;
+    lostBtn.style.opacity = '1';
+    lostBtn.style.cursor = 'pointer';
+    lostBtn.title = '';
+  }
+  if (foundBtn) {
+    foundBtn.disabled = false;
+    foundBtn.style.opacity = '1';
+    foundBtn.style.cursor = 'pointer';
+    foundBtn.title = '';
+  }
+  const banner = document.getElementById('suspension-banner');
+  if (banner) banner.remove();
+}
+
+document.addEventListener('DOMContentLoaded', checkUserAccountStatus);
+
 // Modal Dialog Controls
 window.openModal = function(modalId) {
+  if ((modalId === 'lost-modal' || modalId === 'found-modal') && localStorage.getItem('userStatus') === 'suspended') {
+    return showToast('🚫 Account suspended by campus administration. You cannot publish new listings.', 'error');
+  }
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.classList.add('open');

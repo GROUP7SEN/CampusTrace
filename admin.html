@@ -22,6 +22,7 @@
     </button>
     <div class="nav-links" id="nav-menu">
       <a href="index.html">Main Portal</a>
+      <a href="about.html">About</a>
       <a href="dashboard.html">Campus Feed</a>
       <button id="adminLogoutBtn" class="btn btn-outline" style="display: none; padding: 6px 14px; font-size: 0.8rem;">Lock Admin</button>
     </div>
@@ -214,6 +215,7 @@
 
       <form id="admin-user-form">
         <input type="hidden" id="admin-user-edit-mode" value="create" />
+        <input type="hidden" id="adm-u-target-email" />
         
         <div class="form-group">
           <label for="adm-u-name">Full Name</label>
@@ -325,10 +327,11 @@
       <div class="footer-links">
         <h4>Quick Links</h4>
         <ul>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
           <li><a href="dashboard.html">Campus Feed</a></li>
           <li><a href="login.html">Login</a></li>
           <li><a href="register.html">Register</a></li>
+          <li><a href="https://github.com/GROUP7SEN/CampusTrace" target="_blank" rel="noopener noreferrer">GitHub</a></li>
         </ul>
       </div>
 
@@ -757,10 +760,11 @@
       document.getElementById('admin-user-modal-title').textContent = 'Add Student User Account';
       document.getElementById('admin-user-modal-sub').textContent = 'Register a new student user account on CampusTrace.';
       document.getElementById('admin-user-edit-mode').value = 'create';
+      document.getElementById('adm-u-target-email').value = '';
       document.getElementById('adm-u-name').value = '';
       document.getElementById('adm-u-matric').value = '';
       document.getElementById('adm-u-email').value = '';
-      document.getElementById('adm-u-email').disabled = false;
+      document.getElementById('adm-u-email').readOnly = false;
       document.getElementById('adm-u-whatsapp').value = '';
       document.getElementById('adm-u-contact-pref').value = 'both';
       document.getElementById('adm-u-password').value = '';
@@ -770,16 +774,18 @@
     };
 
     window.openEditUserModal = function(email) {
-      const user = adminUsersCache.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const targetEmail = (email || '').toLowerCase();
+      const user = adminUsersCache.find(u => u.email.toLowerCase() === targetEmail);
       if (!user) return showToast('User account not found.', 'error');
 
       document.getElementById('admin-user-modal-title').textContent = 'Edit Student User Account';
       document.getElementById('admin-user-modal-sub').textContent = `Modify details for ${user.name} (${user.email}).`;
       document.getElementById('admin-user-edit-mode').value = 'edit';
+      document.getElementById('adm-u-target-email').value = targetEmail;
       document.getElementById('adm-u-name').value = user.name || '';
       document.getElementById('adm-u-matric').value = user.matric || '';
       document.getElementById('adm-u-email').value = user.email || '';
-      document.getElementById('adm-u-email').disabled = true;
+      document.getElementById('adm-u-email').readOnly = true;
       document.getElementById('adm-u-whatsapp').value = user.whatsapp || '';
       document.getElementById('adm-u-contact-pref').value = user.contactPref || 'both';
       document.getElementById('adm-u-password').value = '';
@@ -792,9 +798,10 @@
     document.getElementById('admin-user-form')?.addEventListener('submit', function(e) {
       e.preventDefault();
       const mode = document.getElementById('admin-user-edit-mode').value;
+      const targetEmail = (document.getElementById('adm-u-target-email').value || document.getElementById('adm-u-email').value).trim().toLowerCase();
       const name = document.getElementById('adm-u-name').value.trim();
       const matric = document.getElementById('adm-u-matric').value.trim();
-      const email = document.getElementById('adm-u-email').value.trim().toLowerCase();
+      const email = (document.getElementById('adm-u-email').value.trim() || targetEmail).toLowerCase();
       const whatsapp = document.getElementById('adm-u-whatsapp').value.trim();
       const contactPref = document.getElementById('adm-u-contact-pref').value;
       const password = document.getElementById('adm-u-password').value.trim();
@@ -804,11 +811,17 @@
       if (whatsapp.length < 10) return showToast('Enter a valid WhatsApp number.', 'warning');
 
       const userData = { name, matric, email, whatsapp, contactPref, status, role: 'student' };
-      if (password && password.length >= 4) userData.password = password;
 
-      // Update LocalStorage registeredAccounts
+      // Preserve existing password if not updated
       const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
-      const index = registeredAccounts.findIndex(u => u.email.toLowerCase() === email);
+      const index = registeredAccounts.findIndex(u => (u.email || '').toLowerCase() === email);
+      
+      if (password && password.length >= 4) {
+        userData.password = password;
+      } else if (index >= 0 && registeredAccounts[index].password) {
+        userData.password = registeredAccounts[index].password;
+      }
+
       if (index >= 0) {
         registeredAccounts[index] = { ...registeredAccounts[index], ...userData };
       } else {
@@ -816,7 +829,7 @@
       }
       localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
 
-      // Update Firestore users collection
+      // Update Firestore users collection with merge
       if (typeof db !== 'undefined') {
         db.collection('users').doc(email).set(userData, { merge: true })
           .then(() => showToast(`User account ${mode === 'create' ? 'created' : 'updated'} successfully!`, 'success'))
@@ -831,7 +844,8 @@
 
     // Toggle Suspend/Activate User Account
     window.toggleUserStatus = function(email) {
-      const user = adminUsersCache.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const targetEmail = (email || '').toLowerCase();
+      const user = adminUsersCache.find(u => u.email.toLowerCase() === targetEmail);
       if (!user) return;
 
       const newStatus = user.status === 'suspended' ? 'active' : 'suspended';
@@ -840,15 +854,15 @@
       if (confirm(`Are you sure you want to change ${user.name}'s account status to ${newStatus.toUpperCase()}?`)) {
         // Update LocalStorage
         const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
-        const index = registeredAccounts.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+        const index = registeredAccounts.findIndex(u => (u.email || '').toLowerCase() === targetEmail);
         if (index >= 0) {
           registeredAccounts[index].status = newStatus;
           localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
         }
 
-        // Update Firestore
+        // Update Firestore with merge
         if (typeof db !== 'undefined') {
-          db.collection('users').doc(email.toLowerCase()).update({ status: newStatus })
+          db.collection('users').doc(targetEmail).set({ status: newStatus }, { merge: true })
             .then(() => showToast(`Account ${user.email} has been ${actionMsg}.`, 'info'))
             .catch(err => console.warn(err));
         }
@@ -858,23 +872,42 @@
 
     // Reset User Password Handler
     window.resetUserPassword = function(email) {
-      const newPwd = prompt(`Enter new password for account (${email}):`);
-      if (newPwd === null) return;
+      const targetEmail = (email || '').toLowerCase();
+      if (!targetEmail) return;
+
+      const newPwd = prompt(`Enter new password for student account (${email}):`);
+      if (newPwd === null) return; // User cancelled
       if (newPwd.trim().length < 4) return showToast('Password must be at least 4 characters long.', 'warning');
 
       const pwd = newPwd.trim();
       const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
-      const index = registeredAccounts.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+      const index = registeredAccounts.findIndex(u => (u.email || '').toLowerCase() === targetEmail);
+      
       if (index >= 0) {
         registeredAccounts[index].password = pwd;
-        localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+      } else {
+        registeredAccounts.push({
+          name: 'Student User',
+          matric: 'N/A',
+          email: targetEmail,
+          whatsapp: 'N/A',
+          contactPref: 'both',
+          status: 'active',
+          role: 'student',
+          password: pwd
+        });
       }
+      localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
 
       if (typeof db !== 'undefined') {
-        db.collection('users').doc(email.toLowerCase()).update({ password: pwd })
+        db.collection('users').doc(targetEmail).set({ password: pwd }, { merge: true })
           .then(() => showToast(`Password for ${email} reset successfully!`, 'success'))
-          .catch(err => console.warn(err));
+          .catch(err => console.warn('Firestore pwd reset fallback:', err));
+      } else {
+        showToast(`Password for ${email} reset locally!`, 'success');
       }
+
+      fetchAdminUserData();
     };
 
     // Delete User Account Handler
