@@ -2,6 +2,8 @@
 
 CampusTrace is designed and developed by Group 7 for SEN106/216 at Obafemi Awolowo University (OAU), Ile-Ife.
 
+> **Live Application**: [https://campustrace.samkiel.dev](https://campustrace.samkiel.dev)
+
 ## Project Leadership
 
 - **Project Lead**: [Samuel Ezekiel](https://github.com/samkiell) (@samkiell) - [Portfolio](https://samkiel.dev)
