@@ -39,26 +39,22 @@
 
   <!-- Quick Feature Breakdown -->
   <main class="container">
-    <div class="card" style="text-align: center;">
-      <h2>How CampusTrace Works</h2>
-      <p class="subtitle" style="margin-bottom: 0;">Simple 3-step recovery process</p>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-      <div class="card" style="text-align: center; margin-bottom: 0;">
-        <div style="font-size: 2rem; margin-bottom: 8px;">📢</div>
+    <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 14px;">How it works</p>
+    <div class="how-grid">
+      <div class="how-item">
+        <div class="how-icon">📢</div>
         <h3>1. Post Details</h3>
-        <p class="subtitle">Submit missing or found item information with a photo.</p>
+        <p>Submit missing or found item information with a photo.</p>
       </div>
-      <div class="card" style="text-align: center; margin-bottom: 0;">
-        <div style="font-size: 2rem; margin-bottom: 8px;">🔍</div>
-        <h3>2. Search & Filter</h3>
-        <p class="subtitle">Browse real-time listings by category or keywords.</p>
+      <div class="how-item">
+        <div class="how-icon">🔍</div>
+        <h3>2. Search &amp; Filter</h3>
+        <p>Browse real-time listings by category or keyword.</p>
       </div>
-      <div class="card" style="text-align: center; margin-bottom: 0;">
-        <div style="font-size: 2rem; margin-bottom: 8px;">✉️</div>
+      <div class="how-item">
+        <div class="how-icon">✉️</div>
         <h3>3. Direct Contact</h3>
-        <p class="subtitle">Reach out via school email to verify and return items.</p>
+        <p>Reach out via school email to verify and return items.</p>
       </div>
     </div>
   </main>
@@ -81,6 +77,7 @@
           <li><a href="dashboard.html">Campus Feed</a></li>
           <li><a href="login.html">Login</a></li>
           <li><a href="register.html">Register</a></li>
+          <li><a href="admin.html">Admin Portal</a></li>
         </ul>
       </div>
 
@@ -96,24 +93,23 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script src="script.js"></script>
   <script>
-    // Hamburger Menu Toggle
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const navMenu = document.getElementById('nav-menu');
-    if (hamburgerBtn && navMenu) {
-      hamburgerBtn.addEventListener('click', () => {
-        hamburgerBtn.classList.toggle('open');
-        navMenu.classList.toggle('active');
-      });
-    }
-
     // Show Dashboard button if user is already logged in
-    const userEmail = localStorage.getItem('userEmail');
-    if (userEmail) {
-      document.getElementById('nav-login').style.display = 'none';
-      document.getElementById('nav-register').style.display = 'none';
-      document.getElementById('nav-dash').style.display = 'inline-block';
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const userEmail = localStorage.getItem('userEmail');
+      if (userEmail) {
+        const loginBtn = document.getElementById('nav-login');
+        const registerBtn = document.getElementById('nav-register');
+        const dashBtn = document.getElementById('nav-dash');
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (registerBtn) registerBtn.style.display = 'none';
+        if (dashBtn) dashBtn.style.display = 'inline-flex';
+      }
+    });
   </script>
 </body>
 </html>

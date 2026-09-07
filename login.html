@@ -27,25 +27,20 @@
   </nav>
 
   <!-- Login Container -->
-  <main class="container" style="max-width: 480px;">
+  <main class="container container-sm">
     <section class="card">
       <h2>Student Sign In</h2>
       <p class="subtitle">Enter your OAU details to access the portal.</p>
 
       <form id="login-form">
         <div class="form-group">
-          <label for="login-name">Full Name</label>
-          <input type="text" id="login-name" placeholder="e.g. Samkiel John" required />
+          <label for="login-identifier">School Email or Matriculation Number</label>
+          <input type="text" id="login-identifier" placeholder="e.g. student@student.oau.edu.ng or SEN/2021/001" required />
         </div>
 
         <div class="form-group">
-          <label for="login-matric">Matriculation Number</label>
-          <input type="text" id="login-matric" placeholder="e.g. SEN/2021/001" required />
-        </div>
-
-        <div class="form-group">
-          <label for="login-email">School Email</label>
-          <input type="email" id="login-email" placeholder="e.g. student@student.oau.edu.ng" required />
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password" required />
         </div>
 
         <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sign In</button>
@@ -75,6 +70,7 @@
           <li><a href="dashboard.html">Campus Feed</a></li>
           <li><a href="login.html">Login</a></li>
           <li><a href="register.html">Register</a></li>
+          <li><a href="admin.html">Admin Portal</a></li>
         </ul>
       </div>
 
@@ -90,30 +86,40 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script src="script.js"></script>
   <script>
-    // Hamburger Menu Toggle
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const navMenu = document.getElementById('nav-menu');
-    if (hamburgerBtn && navMenu) {
-      hamburgerBtn.addEventListener('click', () => {
-        hamburgerBtn.classList.toggle('open');
-        navMenu.classList.toggle('active');
-      });
-    }
-
-    // Handle Login Form Submission & Save details
+    // Handle Login Form Submission with Email or Matric Number
     document.getElementById('login-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      const name = document.getElementById('login-name').value.trim();
-      const matric = document.getElementById('login-matric').value.trim();
-      const email = document.getElementById('login-email').value.trim();
+      const identifier = document.getElementById('login-identifier').value.trim();
+      const password = document.getElementById('login-password').value.trim();
 
-      localStorage.setItem('userName', name);
-      localStorage.setItem('userMatric', matric);
-      localStorage.setItem('userEmail', email);
+      const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      
+      const foundAccount = registeredAccounts.find(acc => 
+        acc.email.toLowerCase() === identifier.toLowerCase() || 
+        acc.matric.toLowerCase() === identifier.toLowerCase()
+      );
 
-      alert('Signed in successfully!');
-      window.location.href = 'dashboard.html';
+      if (foundAccount) {
+        // Validate password against stored account
+        if (foundAccount.password !== password) {
+          return showToast('Incorrect password. Please try again.', 'error');
+        }
+        localStorage.setItem('userName', foundAccount.name);
+        localStorage.setItem('userMatric', foundAccount.matric);
+        localStorage.setItem('userEmail', foundAccount.email);
+      } else {
+        return showToast('No account found with that email or matric number. Please register first.', 'warning');
+      }
+
+      showToast('Signed in successfully! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 800);
     });
   </script>
 </body>
