@@ -498,7 +498,7 @@ textarea { resize: vertical; min-height: 90px; }
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding-top: 12px;
+ padding-top: 12px; 
   border-top: 1px solid var(--border);
   flex-wrap: wrap;
 }
@@ -1013,15 +1013,24 @@ textarea { resize: vertical; min-height: 90px; }
     gap: 10px;
   }
 
-  .admin-table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    font-size: 0.85rem;
-    text-align: right !important;
-  }
+.admin-table td {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.85rem;
+  text-align: right !important;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.admin-table td > * {
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
 
   .admin-table td[data-label="Actions"] {
     flex-direction: column;
