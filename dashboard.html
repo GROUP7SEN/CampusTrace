@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - CampusTrace</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Dashboard Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.png" alt="OAU Logo" />
+      <span>CampusTrace</span>
+    </a>
+    <button class="hamburger-toggle" id="hamburger-btn" aria-label="Toggle Navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="index.html">Home</a>
+      <button onclick="openModal('lost-modal')" class="btn btn-warning" style="padding: 7px 14px; font-size: 0.825rem;">+ Report Missing</button>
+      <button onclick="openModal('found-modal')" class="btn btn-success" style="padding: 7px 14px; font-size: 0.825rem;">+ Report Found</button>
+      <span id="user-display" style="font-size: 0.85rem; opacity: 0.9; color: #cbd5e1;"></span>
+      <button id="logoutBtn" class="btn btn-danger" style="padding: 6px 14px; font-size: 0.8rem;">Logout</button>
+    </div>
+  </nav>
+
+  <main class="container" style="max-width: 960px;">
+    
+    <!-- Portal Overview Stats -->
+    <div class="dash-stats">
+      <div class="stat-card">
+        <span class="stat-label">Total Listings</span>
+        <span class="stat-value" id="stat-total">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Missing Items</span>
+        <span class="stat-value" id="stat-missing">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Found Items</span>
+        <span class="stat-value" id="stat-found">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Reconnected</span>
+        <span class="stat-value" id="stat-resolved">0</span>
+      </div>
+    </div>
+
+    <!-- View Switcher Tabs -->
+    <div class="dash-tabs">
+      <button class="tab-btn active" id="tab-feed" onclick="switchTab('feed')">📌 All Feed Items</button>
+      <button class="tab-btn" id="tab-my" onclick="switchTab('my')">👤 My Listings</button>
+    </div>
+
+    <!-- Campus Real-time Feed & Filters -->
+    <section class="card" id="fyp-section">
+      <h2>Campus Feed</h2>
+      <p class="subtitle">Live listing of missing and found belongings across OAU campus.</p>
+      
+      <!-- Filter controls -->
+      <div class="filter-bar">
+        <input type="text" id="search-input" placeholder="🔍 Search keywords, title, or location..." />
+        <select id="category-filter">
+          <option value="all">All Categories</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Student ID & Cards">Student ID & Cards</option>
+          <option value="Keys & Wallets">Keys & Wallets</option>
+          <option value="Bags & Backpacks">Bags & Backpacks</option>
+          <option value="Documents & Books">Documents & Books</option>
+          <option value="Clothing & Accessories">Clothing & Accessories</option>
+          <option value="Others">Others</option>
+        </select>
+        <select id="status-filter">
+          <option value="all">All Status</option>
+          <option value="missing">Missing Items</option>
+          <option value="found">Found Items</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+
+      <!-- Feed Container -->
+      <div class="feed-list" id="feed-container">
+        <!-- Posts load dynamically from Firestore -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Report Missing Item Modal Overlay -->
+  <div class="modal-overlay" id="lost-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Report a Missing Item</h2>
+        <button class="modal-close" onclick="closeModal('lost-modal')">&times;</button>
+      </div>
+      <p class="subtitle">Provide detailed information so fellow students can identify and return your missing item.</p>
+
+      <form id="report-lost-form">
+        <div class="form-group">
+          <label for="lost-title">Item Name</label>
+          <input type="text" id="lost-title" placeholder="e.g. Black HP Laptop Bag with Red Zippers" required />
+        </div>
+
+        <div class="form-group">
+          <label for="lost-category">Category</label>
+          <select id="lost-category" required>
+            <option value="Electronics">Electronics</option>
+            <option value="Student ID & Cards">Student ID & Cards</option>
+            <option value="Keys & Wallets">Keys & Wallets</option>
+            <option value="Bags & Backpacks">Bags & Backpacks</option>
+            <option value="Documents & Books">Documents & Books</option>
+            <option value="Clothing & Accessories">Clothing & Accessories</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="lost-desc">Description & Last Seen Location</label>
+          <textarea id="lost-desc" rows="3" placeholder="Provide distinct features, color, brand, or location last seen (e.g., Natural Science Lecture Theatre)..." required></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+          <button type="submit" class="btn btn-warning" style="flex: 1;">Publish Missing Report</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('lost-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Report Found Item Modal Overlay -->
+  <div class="modal-overlay" id="found-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Report a Found Item</h2>
+        <button class="modal-close" onclick="closeModal('found-modal')">&times;</button>
+      </div>
+      <p class="subtitle">Found a belonging on campus? Post details with a photo so the owner can claim it.</p>
+
+      <form id="report-found-form">
+        <div class="form-group">
+          <label for="found-title">Item Name</label>
+          <input type="text" id="found-title" placeholder="e.g. Student ID Card (John Doe - SEN/2021/045)" required />
+        </div>
+
+        <div class="form-group">
+          <label for="found-category">Category</label>
+          <select id="found-category" required>
+            <option value="Student ID & Cards">Student ID & Cards</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Keys & Wallets">Keys & Wallets</option>
+            <option value="Bags & Backpacks">Bags & Backpacks</option>
+            <option value="Documents & Books">Documents & Books</option>
+            <option value="Clothing & Accessories">Clothing & Accessories</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="found-desc">Description & Safe Pickup Location</label>
+          <textarea id="found-desc" rows="3" placeholder="Where did you find it? Where can the owner safely collect or verify it (e.g., Security Unit / Dept Secretariat)?" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="found-img">Upload Photo of Item</label>
+          <input type="file" id="found-img" accept="image/*" required />
+          <div id="imagePreviewContainer" style="display: none; margin-top: 10px;">
+            <img id="imagePreview" src="" alt="Preview" class="post-img" />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+          <button type="submit" class="btn btn-success" id="submit-found-btn" style="flex: 1;">Publish Found Item</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('found-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-brand-logo">
+          <img src="assets/logo.png" alt="CampusTrace Logo" />
+          <span>CampusTrace</span>
+        </a>
+        <p>The official lost & found portal for Obafemi Awolowo University students and staff.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Campus Feed</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><a href="admin.html">Admin Portal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Campus Support</h4>
+        <p>Obafemi Awolowo University, Ile-Ife</p>
+        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 CampusTrace - OAU Lost & Found Portal. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+  <!-- App Script -->
+  <script src="script.js"></script>
+</body>
+</html>

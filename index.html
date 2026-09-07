@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusTrace - OAU Lost & Found Portal</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Minimal Header / Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.png" alt="OAU Logo" />
+      <span>CampusTrace</span>
+    </a>
+    <button class="hamburger-toggle" id="hamburger-btn" aria-label="Toggle Navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="login.html" class="btn btn-outline" id="nav-login">Login</a>
+      <a href="register.html" class="btn btn-primary" id="nav-register">Register</a>
+      <a href="dashboard.html" class="btn btn-primary" id="nav-dash" style="display: none;">Dashboard</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <h1>Lost Something on Campus?</h1>
+    <p>CampusTrace is the centralized lost & found portal for OAU students. Report missing items, post found belongings, and reconnect items with their owners instantly.</p>
+    <div class="cta-group">
+      <a href="dashboard.html" class="btn btn-primary">Go to Campus Feed</a>
+      <a href="login.html" class="btn btn-outline">Sign In to Post</a>
+    </div>
+  </header>
+
+  <!-- Quick Feature Breakdown -->
+  <main class="container">
+    <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 14px;">How it works</p>
+    <div class="how-grid">
+      <div class="how-item">
+        <div class="how-icon">📢</div>
+        <h3>1. Post Details</h3>
+        <p>Submit missing or found item information with a photo.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-icon">🔍</div>
+        <h3>2. Search &amp; Filter</h3>
+        <p>Browse real-time listings by category or keyword.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-icon">✉️</div>
+        <h3>3. Direct Contact</h3>
+        <p>Reach out via school email to verify and return items.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-brand-logo">
+          <img src="assets/logo.png" alt="CampusTrace Logo" />
+          <span>CampusTrace</span>
+        </a>
+        <p>The official lost & found portal for Obafemi Awolowo University students and staff.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Campus Feed</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><a href="admin.html">Admin Portal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Campus Support</h4>
+        <p>Obafemi Awolowo University, Ile-Ife</p>
+        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 CampusTrace - OAU Lost & Found Portal. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Show Dashboard button if user is already logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      const userEmail = localStorage.getItem('userEmail');
+      if (userEmail) {
+        const loginBtn = document.getElementById('nav-login');
+        const registerBtn = document.getElementById('nav-register');
+        const dashBtn = document.getElementById('nav-dash');
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (registerBtn) registerBtn.style.display = 'none';
+        if (dashBtn) dashBtn.style.display = 'inline-flex';
+      }
+    });
+  </script>
+</body>
+</html>

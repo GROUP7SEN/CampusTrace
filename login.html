@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - CampusTrace</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.png" alt="OAU Logo" />
+      <span>CampusTrace</span>
+    </a>
+    <button class="hamburger-toggle" id="hamburger-btn" aria-label="Toggle Navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="index.html">Home</a>
+      <a href="register.html" class="btn btn-primary">Register</a>
+    </div>
+  </nav>
+
+  <!-- Login Container -->
+  <main class="container container-sm">
+    <section class="card">
+      <h2>Student Sign In</h2>
+      <p class="subtitle">Enter your OAU details to access the portal.</p>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-identifier">School Email or Matriculation Number</label>
+          <input type="text" id="login-identifier" placeholder="e.g. student@student.oau.edu.ng or SEN/2021/001" required />
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sign In</button>
+      </form>
+
+      <p class="subtitle" style="text-align: center; margin-top: 16px; margin-bottom: 0;">
+        Need an account? <a href="register.html" style="color: var(--accent); font-weight: 600;">Register here</a>
+      </p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-brand-logo">
+          <img src="assets/logo.png" alt="CampusTrace Logo" />
+          <span>CampusTrace</span>
+        </a>
+        <p>The official lost & found portal for Obafemi Awolowo University students and staff.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Campus Feed</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><a href="admin.html">Admin Portal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Campus Support</h4>
+        <p>Obafemi Awolowo University, Ile-Ife</p>
+        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 CampusTrace - OAU Lost & Found Portal. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Handle Login Form Submission with Email or Matric Number
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const identifier = document.getElementById('login-identifier').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      
+      const foundAccount = registeredAccounts.find(acc => 
+        acc.email.toLowerCase() === identifier.toLowerCase() || 
+        acc.matric.toLowerCase() === identifier.toLowerCase()
+      );
+
+      if (foundAccount) {
+        // Validate password against stored account
+        if (foundAccount.password !== password) {
+          return showToast('Incorrect password. Please try again.', 'error');
+        }
+        localStorage.setItem('userName', foundAccount.name);
+        localStorage.setItem('userMatric', foundAccount.matric);
+        localStorage.setItem('userEmail', foundAccount.email);
+      } else {
+        return showToast('No account found with that email or matric number. Please register first.', 'warning');
+      }
+
+      showToast('Signed in successfully! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 800);
+    });
+  </script>
+</body>
+</html>

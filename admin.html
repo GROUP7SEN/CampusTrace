@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal - CampusTrace</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Admin Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.png" alt="CampusTrace Logo" />
+      <span>CampusTrace Admin</span>
+    </a>
+    <button class="hamburger-toggle" id="hamburger-btn" aria-label="Toggle Navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="index.html">Main Portal</a>
+      <a href="dashboard.html">Campus Feed</a>
+      <button id="adminLogoutBtn" class="btn btn-outline" style="display: none; padding: 6px 14px; font-size: 0.8rem;">Lock Admin</button>
+    </div>
+  </nav>
+
+  <main class="container" style="max-width: 960px;">
+
+    <!-- PIN Lock Section (Shown if unauthenticated) -->
+    <section class="card pin-lock-container" id="pin-lock-section">
+      <div style="font-size: 2.5rem; margin-bottom: 8px;">🔒</div>
+      <h2>Admin Access Restricted</h2>
+      <p class="subtitle">Enter the 4-digit administrator PIN to access management controls.</p>
+
+      <form id="pin-form">
+        <div class="form-group">
+          <input 
+            type="password" 
+            id="pin-input" 
+            class="pin-input-field" 
+            placeholder="••••" 
+            maxlength="4" 
+            pattern="[0-9]*" 
+            inputmode="numeric" 
+            required 
+            autofocus 
+          />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Unlock Admin Dashboard</button>
+      </form>
+    </section>
+
+    <!-- Admin Content Section (Hidden until PIN is authenticated) -->
+    <div id="admin-content-section" style="display: none;">
+      
+      <!-- Stats Overview -->
+      <div class="dash-stats">
+        <div class="stat-card">
+          <span class="stat-label">Total Portal Listings</span>
+          <span class="stat-value" id="admin-stat-total">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Active Missing</span>
+          <span class="stat-value" id="admin-stat-missing">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Active Found</span>
+          <span class="stat-value" id="admin-stat-found">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Reconnected Items</span>
+          <span class="stat-value" id="admin-stat-resolved">0</span>
+        </div>
+      </div>
+
+      <!-- Controls & Filter Bar -->
+      <section class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h2>Moderation & Listing Management</h2>
+            <p class="subtitle" style="margin-bottom: 0;">Monitor, resolve, or permanently delete portal reports.</p>
+          </div>
+          <button onclick="fetchAdminData()" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem;">🔄 Refresh Table</button>
+        </div>
+
+        <div class="filter-bar">
+          <input type="text" id="admin-search" placeholder="🔍 Search by keyword, title, or poster..." />
+          <select id="admin-category-filter">
+            <option value="all">All Categories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Student ID & Cards">Student ID & Cards</option>
+            <option value="Keys & Wallets">Keys & Wallets</option>
+            <option value="Bags & Backpacks">Bags & Backpacks</option>
+            <option value="Documents & Books">Documents & Books</option>
+            <option value="Clothing & Accessories">Clothing & Accessories</option>
+            <option value="Others">Others</option>
+          </select>
+          <select id="admin-status-filter">
+            <option value="all">All Status</option>
+            <option value="missing">Missing Items</option>
+            <option value="found">Found Items</option>
+            <option value="resolved">Resolved Items</option>
+          </select>
+        </div>
+
+        <!-- Moderation Data Table -->
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Item Details</th>
+                <th>Category</th>
+                <th>Posted By</th>
+                <th>Photo</th>
+                <th>Status</th>
+                <th style="text-align: right;">Admin Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table-body">
+              <!-- Admin table rows load dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-brand-logo">
+          <img src="assets/logo.png" alt="CampusTrace Logo" />
+          <span>CampusTrace Admin</span>
+        </a>
+        <p>System Administrator Management Portal for Obafemi Awolowo University.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Campus Feed</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Campus Support</h4>
+        <p>Obafemi Awolowo University, Ile-Ife</p>
+        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 CampusTrace - OAU Lost & Found Portal. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+  <!-- App Script -->
+  <script src="script.js"></script>
+
+  <!-- Admin Logic Script -->
+  <script>
+    const ADMIN_PIN = '7024';
+
+    // PIN Authentication Handler
+    document.getElementById('pin-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const enteredPin = document.getElementById('pin-input').value.trim();
+
+      if (enteredPin === ADMIN_PIN) {
+        sessionStorage.setItem('adminPINAuth', 'true');
+        showToast('Admin access granted!', 'success');
+        checkAdminAuth();
+      } else {
+        showToast('Invalid Admin PIN. Access denied.', 'error');
+        document.getElementById('pin-input').value = '';
+        document.getElementById('pin-input').focus();
+      }
+    });
+
+    // Check PIN Auth Status
+    function checkAdminAuth() {
+      const isAuth = sessionStorage.getItem('adminPINAuth') === 'true';
+      const lockSec = document.getElementById('pin-lock-section');
+      const contentSec = document.getElementById('admin-content-section');
+      const logoutBtn = document.getElementById('adminLogoutBtn');
+
+      if (isAuth) {
+        lockSec.style.display = 'none';
+        contentSec.style.display = 'block';
+        logoutBtn.style.display = 'inline-flex';
+        fetchAdminData();
+      } else {
+        lockSec.style.display = 'block';
+        contentSec.style.display = 'none';
+        logoutBtn.style.display = 'none';
+      }
+    }
+
+    // Admin Logout
+    document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('adminPINAuth');
+      showToast('Admin session locked.', 'info');
+      checkAdminAuth();
+    });
+
+    let adminPostsCache = [];
+
+    // Real-Time Listener for Admin Data
+    function fetchAdminData() {
+      db.collection('portal_items').onSnapshot(snapshot => {
+        adminPostsCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderAdminStats();
+        renderAdminTable();
+      }, err => {
+        console.warn('Admin fetch fallback:', err);
+      });
+    }
+
+    // Render Stats Overview
+    function renderAdminStats() {
+      const total = adminPostsCache.length;
+      const missing = adminPostsCache.filter(p => p.type === 'missing' && !p.resolved).length;
+      const found = adminPostsCache.filter(p => p.type === 'found' && !p.resolved).length;
+      const resolved = adminPostsCache.filter(p => p.resolved).length;
+
+      document.getElementById('admin-stat-total').textContent = total;
+      document.getElementById('admin-stat-missing').textContent = missing;
+      document.getElementById('admin-stat-found').textContent = found;
+      document.getElementById('admin-stat-resolved').textContent = resolved;
+    }
+
+    // Render Admin Management Table
+    function renderAdminTable() {
+      const tbody = document.getElementById('admin-table-body');
+      const searchQuery = (document.getElementById('admin-search').value || '').toLowerCase();
+      const catFilter = document.getElementById('admin-category-filter').value;
+      const statusFilter = document.getElementById('admin-status-filter').value;
+
+      if (!tbody) return;
+
+      const filtered = adminPostsCache.filter(post => {
+        const titleMatch = (post.title || '').toLowerCase().includes(searchQuery);
+        const descMatch = (post.desc || '').toLowerCase().includes(searchQuery);
+        const userMatch = (post.userName || '').toLowerCase().includes(searchQuery);
+        const emailMatch = (post.email || '').toLowerCase().includes(searchQuery);
+        const matchesSearch = titleMatch || descMatch || userMatch || emailMatch;
+
+        const matchesCat = catFilter === 'all' || post.category === catFilter;
+
+        let matchesStatus = true;
+        if (statusFilter === 'missing') matchesStatus = post.type === 'missing' && !post.resolved;
+        else if (statusFilter === 'found') matchesStatus = post.type === 'found' && !post.resolved;
+        else if (statusFilter === 'resolved') matchesStatus = post.resolved === true;
+
+        return matchesSearch && matchesCat && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+              No listings found matching filter criteria.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(post => {
+        const dateStr = post.createdAt?.toDate 
+          ? post.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) 
+          : 'Recently';
+
+        return `
+          <tr>
+            <td>
+              ${post.type === 'missing' 
+                ? '<span class="badge badge-missing">📢 Missing</span>' 
+                : '<span class="badge badge-found">🔍 Found</span>'}
+            </td>
+            <td>
+              <strong>${post.title}</strong>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">${post.desc}</div>
+            </td>
+            <td><span class="badge badge-cat">${post.category || 'General'}</span></td>
+            <td>
+              <div>${post.userName || 'Unknown'}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">${post.email}</div>
+            </td>
+            <td>
+              ${post.imageUrl 
+                ? `<img src="${post.imageUrl}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="window.open('${post.imageUrl}', '_blank')" />` 
+                : '<span style="color: var(--text-muted); font-size: 0.8rem;">No photo</span>'}
+            </td>
+            <td>
+              ${post.resolved 
+                ? '<span class="badge badge-resolved">✅ Resolved</span>' 
+                : '<span style="font-size: 0.8rem; color: var(--text-muted);">Active</span>'}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: 6px;">
+                ${!post.resolved ? `<button onclick="adminResolve('${post.id}')" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.75rem;">Resolve</button>` : ''}
+                <button onclick="adminDelete('${post.id}')" class="btn btn-danger-soft" style="padding: 5px 10px; font-size: 0.75rem;">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Admin Resolve Handler
+    window.adminResolve = function(id) {
+      db.collection('portal_items').doc(id).update({ resolved: true })
+        .then(() => showToast('Post marked as resolved.', 'success'));
+    };
+
+    // Admin Delete Handler
+    window.adminDelete = function(id) {
+      if (confirm('Permanently delete this report from the portal database?')) {
+        db.collection('portal_items').doc(id).delete()
+          .then(() => showToast('Post deleted permanently by Admin.', 'info'));
+      }
+    };
+
+    // Filter listeners
+    document.getElementById('admin-search')?.addEventListener('input', renderAdminTable);
+    document.getElementById('admin-category-filter')?.addEventListener('change', renderAdminTable);
+    document.getElementById('admin-status-filter')?.addEventListener('change', renderAdminTable);
+
+    // Initialize check on page load
+    document.addEventListener('DOMContentLoaded', checkAdminAuth);
+  </script>
+</body>
+</html>
