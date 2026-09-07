@@ -123,6 +123,7 @@
                   <th>Item Details</th>
                   <th>Category</th>
                   <th>Posted By</th>
+                  <th>Date & Time</th>
                   <th>Photo</th>
                   <th>Status</th>
                   <th style="text-align: right;">Admin Actions</th>
@@ -256,6 +257,49 @@
         <div style="display: flex; gap: 12px; margin-top: 8px;">
           <button type="submit" class="btn btn-primary" style="flex: 1;">Save User Account</button>
           <button type="button" class="btn btn-outline" onclick="closeModal('admin-user-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delegate Report Admin Modal Overlay -->
+  <div class="modal-overlay" id="admin-delegate-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Delegate Report Handling</h2>
+        <button class="modal-close" onclick="closeModal('admin-delegate-modal')">&times;</button>
+      </div>
+      <p class="subtitle">Assign this lost/found report to a campus unit or officer for resolution.</p>
+
+      <form id="admin-delegate-form">
+        <input type="hidden" id="del-post-id" />
+
+        <div class="form-group">
+          <label for="del-post-title">Item Report Title</label>
+          <input type="text" id="del-post-title" disabled style="opacity: 0.7; cursor: not-allowed;" />
+        </div>
+
+        <div class="form-group">
+          <label for="del-assignee">Delegate / Assign To</label>
+          <select id="del-assignee" required>
+            <option value="">-- Select Campus Unit or Officer --</option>
+            <option value="OAU Central Security Unit">🛡️ OAU Central Security Unit</option>
+            <option value="Division of Student Affairs (DSA)">🏛️ Division of Student Affairs (DSA)</option>
+            <option value="Department Secretariat / Officer">🏢 Department Secretariat / Officer</option>
+            <option value="Hezekiah Oluwasanmi Library Helpdesk">📚 Library Main Helpdesk</option>
+            <option value="Hall Warden & Security Office">🏠 Hall Warden Office</option>
+            <option value="SUG Executive Transport & Welfare Unit">🎓 Student Union Executive Unit</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="del-notes">Admin Notes & Pickup Instructions</label>
+          <textarea id="del-notes" rows="3" placeholder="Provide instructions for the assignee or location details for the student..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Delegation</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('admin-delegate-modal')">Cancel</button>
         </div>
       </form>
     </div>
@@ -425,7 +469,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">
               No listings found matching filter criteria.
             </td>
           </tr>
@@ -434,34 +478,50 @@
       }
 
       tbody.innerHTML = filtered.map(post => {
+        const isDelegated = Boolean(post.delegatedTo);
+        let dateFormatted = 'Recently';
+        if (post.createdAt) {
+          const d = post.createdAt.toDate ? post.createdAt.toDate() : new Date(post.createdAt);
+          if (!isNaN(d.getTime())) {
+            dateFormatted = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          }
+        }
+
         return `
           <tr>
-            <td>
+            <td data-label="Type">
               ${post.type === 'missing' 
                 ? '<span class="badge badge-missing">📢 Missing</span>' 
                 : '<span class="badge badge-found">🔍 Found</span>'}
             </td>
-            <td>
+            <td data-label="Item Details">
               <strong>${post.title}</strong>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">${post.desc}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top:2px;">${typeof formatDescWithReadMore === 'function' ? formatDescWithReadMore(post.desc, 45) : post.desc}</div>
+              ${isDelegated ? `<div style="font-size: 0.75rem; color: #818cf8; margin-top: 4px;">🛡️ <strong>Delegated:</strong> ${post.delegatedTo}</div>` : ''}
             </td>
-            <td><span class="badge badge-cat">${post.category || 'General'}</span></td>
-            <td>
+            <td data-label="Category"><span class="badge badge-cat">${post.category || 'General'}</span></td>
+            <td data-label="Posted By">
               <div>${post.userName || 'Unknown'}</div>
               <div style="font-size: 0.75rem; color: var(--text-muted);">${post.email}</div>
             </td>
-            <td>
+            <td data-label="Date & Time"><span style="font-size: 0.78rem; color: var(--text-muted); white-space: nowrap;">📅 ${dateFormatted}</span></td>
+            <td data-label="Photo">
               ${post.imageUrl 
                 ? `<img src="${post.imageUrl}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="window.open('${post.imageUrl}', '_blank')" />` 
                 : '<span style="color: var(--text-muted); font-size: 0.8rem;">No photo</span>'}
             </td>
-            <td>
+            <td data-label="Status">
               ${post.resolved 
                 ? '<span class="badge badge-resolved">✅ Resolved</span>' 
-                : '<span style="font-size: 0.8rem; color: var(--text-muted);">Active</span>'}
+                : isDelegated 
+                  ? '<span class="badge badge-cat" style="color: #818cf8; border-color: rgba(129,140,248,0.3);">🛡️ Delegated</span>' 
+                  : '<span style="font-size: 0.8rem; color: var(--text-muted);">Active</span>'}
             </td>
-            <td style="text-align: right;">
-              <div style="display: inline-flex; gap: 6px;">
+            <td data-label="Actions" style="text-align: right;">
+              <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
+                <button onclick="openDelegateModal('${post.id}')" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.75rem; color:#818cf8 !important; border-color:rgba(129,140,248,0.3);">
+                  ${isDelegated ? '✏️ Edit Delegate' : '🛡️ Delegate'}
+                </button>
                 ${!post.resolved ? `<button onclick="adminResolve('${post.id}')" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.75rem;">Resolve</button>` : ''}
                 <button onclick="adminDelete('${post.id}')" class="btn btn-danger-soft" style="padding: 5px 10px; font-size: 0.75rem;">Delete</button>
               </div>
@@ -470,6 +530,39 @@
         `;
       }).join('');
     }
+
+    // Modal Control & Submit Handler for Report Delegation
+    window.openDelegateModal = function(id) {
+      const post = adminPostsCache.find(p => p.id === id);
+      if (!post) return showToast('Report item not found.', 'error');
+
+      document.getElementById('del-post-id').value = post.id;
+      document.getElementById('del-post-title').value = post.title || '';
+      document.getElementById('del-assignee').value = post.delegatedTo || '';
+      document.getElementById('del-notes').value = post.delegatedNotes || '';
+      openModal('admin-delegate-modal');
+    };
+
+    document.getElementById('admin-delegate-form')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const id = document.getElementById('del-post-id').value;
+      const delegatedTo = document.getElementById('del-assignee').value;
+      const delegatedNotes = document.getElementById('del-notes').value.trim();
+
+      if (!id || !delegatedTo) return showToast('Please select a unit or officer to delegate.', 'warning');
+
+      db.collection('portal_items').doc(id).update({
+        delegatedTo,
+        delegatedNotes,
+        delegatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        showToast(`Report delegated to ${delegatedTo} successfully!`, 'success');
+        closeModal('admin-delegate-modal');
+      }).catch(err => {
+        console.error('Delegation error:', err);
+        showToast('Failed to delegate report.', 'error');
+      });
+    });
 
     // Admin Resolve Handler
     window.adminResolve = function(id) {
@@ -506,10 +599,20 @@
     }
 
     function mergeUserSources(firestoreUsers) {
-      const localUsers = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      let localUsers = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      
+      // Ensure default accounts exist if storage is empty
+      if (localUsers.length === 0) {
+        localUsers = [
+          { name: 'Joshua Taiwo', matric: 'MRH/2022/129', email: 'joshuataiwo@student.oauife.edu.ng', whatsapp: '08123456789', contactPref: 'both', status: 'active', role: 'student' },
+          { name: 'Samuel Ezekiel', matric: 'SWE/2023/072', email: 'e.samuel.swe2023072@student.oauife.edu.ng', whatsapp: '08098765432', contactPref: 'both', status: 'active', role: 'student' }
+        ];
+        localStorage.setItem('registeredAccounts', JSON.stringify(localUsers));
+      }
+
       const userMap = new Map();
 
-      // Add local users first
+      // 1. Add local accounts
       localUsers.forEach(u => {
         const em = (u.email || '').toLowerCase();
         if (em) {
@@ -526,7 +629,7 @@
         }
       });
 
-      // Override/Merge with Firestore users
+      // 2. Add Firestore users collection
       firestoreUsers.forEach(u => {
         const em = (u.email || '').toLowerCase();
         if (em) {
@@ -540,6 +643,23 @@
             status: u.status || existing.status || 'active',
             role: u.role || existing.role || 'student',
             password: existing.password || u.password || ''
+          });
+        }
+      });
+
+      // 3. Extract unique posters from portal items cache so posters automatically show up
+      (adminPostsCache || []).forEach(p => {
+        const em = (p.email || '').toLowerCase();
+        if (em && !userMap.has(em)) {
+          userMap.set(em, {
+            name: p.userName || 'Student Poster',
+            matric: 'N/A',
+            email: em,
+            whatsapp: p.whatsapp || 'N/A',
+            contactPref: p.contactPref || 'both',
+            status: 'active',
+            role: 'student',
+            password: ''
           });
         }
       });
@@ -595,20 +715,20 @@
         const isSuspended = u.status === 'suspended';
         return `
           <tr>
-            <td>
+            <td data-label="Student Profile">
               <strong>${u.name}</strong>
               <div style="font-size:0.75rem; color:var(--text-muted);">${u.role === 'admin' ? '👑 Administrator' : '🎓 Student'}</div>
             </td>
-            <td><code style="background:var(--surface-3); padding:2px 6px; border-radius:4px; font-size:0.8rem;">${u.matric}</code></td>
-            <td><a href="mailto:${u.email}" style="color:var(--text); text-decoration:underline;">${u.email}</a></td>
-            <td>${u.whatsapp && u.whatsapp !== 'N/A' ? `<a href="https://wa.me/${u.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" style="color:#4ade80;">💬 ${u.whatsapp}</a>` : '<span style="color:var(--text-muted);">None</span>'}</td>
-            <td><span class="badge badge-cat">${(u.contactPref || 'both').toUpperCase()}</span></td>
-            <td>
+            <td data-label="Matric No."><code style="background:var(--surface-3); padding:2px 6px; border-radius:4px; font-size:0.8rem;">${u.matric}</code></td>
+            <td data-label="Email"><a href="mailto:${u.email}" style="color:var(--text); text-decoration:underline;">${u.email}</a></td>
+            <td data-label="WhatsApp">${u.whatsapp && u.whatsapp !== 'N/A' ? `<a href="https://wa.me/${u.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" style="color:#4ade80;">💬 ${u.whatsapp}</a>` : '<span style="color:var(--text-muted);">None</span>'}</td>
+            <td data-label="Contact Pref"><span class="badge badge-cat">${(u.contactPref || 'both').toUpperCase()}</span></td>
+            <td data-label="Status">
               ${isSuspended 
                 ? '<span class="badge badge-missing" style="color:#f87171; border-color:rgba(248,113,113,0.4);">🚫 Suspended</span>' 
                 : '<span class="badge badge-found" style="color:#4ade80; border-color:rgba(74,222,128,0.4);">✅ Active</span>'}
             </td>
-            <td style="text-align: right;">
+            <td data-label="Actions" style="text-align: right;">
               <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
                 <button onclick="openEditUserModal('${u.email}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">✏️ Edit</button>
                 <button onclick="toggleUserStatus('${u.email}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem; color:${isSuspended ? '#4ade80' : '#fbbf24'} !important;">

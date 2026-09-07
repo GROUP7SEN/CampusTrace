@@ -25,6 +25,37 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Universal Read More / Read Less Toggle for Long Descriptions
+window.toggleReadMore = function(btn) {
+  const container = btn.parentElement;
+  const preview = container.querySelector('.text-preview');
+  const full = container.querySelector('.text-full');
+  if (!preview || !full) return;
+
+  if (full.style.display === 'none') {
+    full.style.display = 'inline';
+    preview.style.display = 'none';
+    btn.textContent = 'Read Less';
+  } else {
+    full.style.display = 'none';
+    preview.style.display = 'inline';
+    btn.textContent = 'Read More';
+  }
+};
+
+function formatDescWithReadMore(text, limit = 90) {
+  if (!text) return '';
+  if (text.length <= limit) return text;
+  const truncated = text.substring(0, limit);
+  return `
+    <span class="read-more-wrapper">
+      <span class="text-preview">${truncated}...</span>
+      <span class="text-full" style="display:none;">${text}</span>
+      <button type="button" onclick="toggleReadMore(this)" style="background:none; border:none; color:#818cf8; cursor:pointer; font-size:0.78rem; font-weight:600; padding:0 2px; text-decoration:underline;">Read More</button>
+    </span>
+  `;
+}
+
 // Auth Guard & User Session
 const currentUserName = localStorage.getItem('userName') || '';
 const currentUserEmail = localStorage.getItem('userEmail') || '';
@@ -210,8 +241,15 @@ function renderFeed() {
   }
 
   feedContainer.innerHTML = posts.map(post => {
-    const isOwner = post.email === currentUserEmail;
-    const dateFormatted = post.createdAt?.toDate ? post.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently';
+    const isOwner = Boolean(post.email && currentUserEmail && (post.email.trim().toLowerCase() === currentUserEmail.trim().toLowerCase()));
+
+    let dateFormatted = 'Recently';
+    if (post.createdAt) {
+      const d = post.createdAt.toDate ? post.createdAt.toDate() : new Date(post.createdAt);
+      if (!isNaN(d.getTime())) {
+        dateFormatted = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+    }
 
     // Poster contact preference logic
     const posterWhatsapp = post.whatsapp || '';
@@ -227,7 +265,7 @@ function renderFeed() {
           <div class="avatar">${post.initials || getInitials(post.userName)}</div>
           <div class="meta">
             <strong>${post.userName || 'Anonymous Student'}</strong>
-            <span>${dateFormatted} • ${post.email}</span>
+            <span>📅 ${dateFormatted} • ${post.email}</span>
           </div>
         </div>
         
@@ -241,23 +279,31 @@ function renderFeed() {
           </div>
           
           <h3>${post.title}</h3>
-          <p>${post.desc}</p>
+          <p>${formatDescWithReadMore(post.desc, 90)}</p>
+          ${post.delegatedTo ? `
+            <div style="font-size:0.8rem; color:#818cf8; background:rgba(129,140,248,0.08); border:1px solid rgba(129,140,248,0.25); padding:8px 12px; border-radius:6px; margin: 10px 0 4px;">
+              🛡️ <strong>Delegated Official Unit:</strong> ${post.delegatedTo}
+              ${post.delegatedNotes ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Instructions: ${post.delegatedNotes}</div>` : ''}
+            </div>
+          ` : ''}
           ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img" alt="${post.title}" onclick="window.open('${post.imageUrl}', '_blank')" style="cursor: pointer;" title="Click to view full photo" />` : ''}
         </div>
 
         <div class="card-footer">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            ${allowWa ? `
-              <a href="https://wa.me/${formattedWa}?text=${encodeURIComponent("Hi, I'm contacting you regarding your CampusTrace post: " + post.title)}" target="_blank" class="btn btn-outline" style="font-size:0.8rem; border-color: rgba(74, 222, 128, 0.35); color: #4ade80 !important;">
-                💬 WhatsApp Poster
-              </a>
-            ` : ''}
-            ${allowEmail ? `
-              <a href="mailto:${post.email}?subject=Regarding '${encodeURIComponent(post.title)}' on CampusTrace" class="btn btn-outline" style="font-size:0.8rem;">
-                ✉️ Email Poster
-              </a>
-            ` : ''}
-          </div>
+          ${!isOwner ? `
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              ${allowWa ? `
+                <a href="https://wa.me/${formattedWa}?text=${encodeURIComponent("Hi, I'm contacting you regarding your CampusTrace post: " + post.title)}" target="_blank" class="btn btn-outline" style="font-size:0.8rem; border-color: rgba(74, 222, 128, 0.35); color: #4ade80 !important;">
+                  💬 WhatsApp Poster
+                </a>
+              ` : ''}
+              ${allowEmail ? `
+                <a href="mailto:${post.email}?subject=Regarding '${encodeURIComponent(post.title)}' on CampusTrace" class="btn btn-outline" style="font-size:0.8rem;">
+                  ✉️ Email Poster
+                </a>
+              ` : ''}
+            </div>
+          ` : '<div></div>'}
           <div style="display:flex; gap:8px;">
             ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}')" class="btn btn-primary" style="font-size:0.8rem;">Mark Resolved</button>` : ''}
             ${isOwner ? `<button onclick="deletePost('${post.id}')" class="btn btn-danger" style="font-size:0.8rem;">Delete</button>` : ''}
@@ -276,6 +322,10 @@ document.getElementById('status-filter')?.addEventListener('change', renderFeed)
 // Submit Missing Item Report
 document.getElementById('report-lost-form')?.addEventListener('submit', function (e) {
   e.preventDefault();
+  if (localStorage.getItem('userStatus') === 'suspended') {
+    return showToast('🚫 Account suspended by campus administration. You cannot publish new listings.', 'error');
+  }
+
   const title = document.getElementById('lost-title').value.trim();
   const category = document.getElementById('lost-category').value;
   const desc = document.getElementById('lost-desc').value.trim();
@@ -348,6 +398,9 @@ function compressAndReadImage(file) {
 // Submit Found Item Report (with Resilient Image Upload Strategy)
 document.getElementById('report-found-form')?.addEventListener('submit', async function (e) {
   e.preventDefault();
+  if (localStorage.getItem('userStatus') === 'suspended') {
+    return showToast('🚫 Account suspended by campus administration. You cannot publish new listings.', 'error');
+  }
   const title = document.getElementById('found-title').value.trim();
   const category = document.getElementById('found-category').value;
   const desc = document.getElementById('found-desc').value.trim();

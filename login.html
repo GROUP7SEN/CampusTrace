@@ -105,6 +105,10 @@
       );
 
       if (foundAccount) {
+        if (foundAccount.status === 'suspended') {
+          return showToast('🚫 Account suspended by campus administration. Please contact Division of Student Affairs (DSA).', 'error');
+        }
+
         // Validate password against stored account
         if (foundAccount.password !== password) {
           return showToast('Incorrect password. Please try again.', 'error');
@@ -114,6 +118,7 @@
         localStorage.setItem('userEmail', foundAccount.email);
         localStorage.setItem('userWhatsapp', foundAccount.whatsapp || '');
         localStorage.setItem('userContactPref', foundAccount.contactPref || 'both');
+        localStorage.setItem('userStatus', foundAccount.status || 'active');
       } else {
         return showToast('No account found with that email or matric number. Please register first.', 'warning');
       }
