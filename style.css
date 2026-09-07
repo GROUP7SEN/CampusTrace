@@ -481,11 +481,16 @@ textarea { resize: vertical; min-height: 90px; }
 }
 
 .post-img {
-  width: 100%;
+  max-width: 100%;
   max-height: 260px;
-  object-fit: cover;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-light);
+  background: rgba(0, 0, 0, 0.3);
+  display: block;
+  margin-top: 10px;
 }
 
 .card-footer {
