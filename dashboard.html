@@ -218,7 +218,10 @@
 
         <div class="form-group">
           <label for="set-password">New Password <span style="font-weight:400; color:var(--text-muted); font-size:0.75rem;">(Leave blank to keep current)</span></label>
-          <input type="password" id="set-password" placeholder="Enter new password (optional)" minlength="4" />
+          <div class="pwd-input-group">
+            <input type="password" id="set-password" placeholder="Enter new password (optional)" minlength="4" />
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('set-password', this)" title="Toggle password visibility">👁️</button>
+          </div>
         </div>
 
         <div style="display: flex; gap: 12px; margin-top: 8px;">

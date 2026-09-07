@@ -40,7 +40,10 @@
 
         <div class="form-group">
           <label for="login-password">Password</label>
-          <input type="password" id="login-password" placeholder="Enter your password" required />
+          <div class="pwd-input-group">
+            <input type="password" id="login-password" placeholder="Enter your password" required />
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('login-password', this)" title="Toggle password visibility">👁️</button>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Sign In</button>
@@ -94,6 +97,12 @@
     // Handle Login Form Submission with Email or Matric Number
     document.getElementById('login-form').addEventListener('submit', function (e) {
       e.preventDefault();
+      const submitBtn = this.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Signing In...';
+      }
+
       const identifier = document.getElementById('login-identifier').value.trim();
       const password = document.getElementById('login-password').value.trim();
 
@@ -104,13 +113,22 @@
         acc.matric.toLowerCase() === identifier.toLowerCase()
       );
 
+      function resetBtn() {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Sign In';
+        }
+      }
+
       if (foundAccount) {
         if (foundAccount.status === 'suspended') {
+          resetBtn();
           return showToast('🚫 Account suspended by campus administration. Please contact Division of Student Affairs (DSA).', 'error');
         }
 
         // Validate password against stored account
         if (foundAccount.password !== password) {
+          resetBtn();
           return showToast('Incorrect password. Please try again.', 'error');
         }
         localStorage.setItem('userName', foundAccount.name);
@@ -120,6 +138,7 @@
         localStorage.setItem('userContactPref', foundAccount.contactPref || 'both');
         localStorage.setItem('userStatus', foundAccount.status || 'active');
       } else {
+        resetBtn();
         return showToast('No account found with that email or matric number. Please register first.', 'warning');
       }
 

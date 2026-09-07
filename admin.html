@@ -37,17 +37,20 @@
 
       <form id="pin-form">
         <div class="form-group">
-          <input 
-            type="password" 
-            id="pin-input" 
-            class="pin-input-field" 
-            placeholder="••••" 
-            maxlength="4" 
-            pattern="[0-9]*" 
-            inputmode="numeric" 
-            required 
-            autofocus 
-          />
+          <div class="pwd-input-group">
+            <input 
+              type="password" 
+              id="pin-input" 
+              class="pin-input-field" 
+              placeholder="••••" 
+              maxlength="4" 
+              pattern="[0-9]*" 
+              inputmode="numeric" 
+              required 
+              autofocus 
+            />
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('pin-input', this)" title="Toggle PIN visibility">👁️</button>
+          </div>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Unlock Admin Dashboard</button>
       </form>
@@ -243,7 +246,10 @@
 
         <div class="form-group">
           <label for="adm-u-password">Password <span style="font-weight:400; color:var(--text-muted); font-size:0.75rem;">(Min. 4 characters)</span></label>
-          <input type="password" id="adm-u-password" placeholder="Account password" />
+          <div class="pwd-input-group">
+            <input type="password" id="adm-u-password" placeholder="Account password" />
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('adm-u-password', this)" title="Toggle password visibility">👁️</button>
+          </div>
         </div>
 
         <div class="form-group">
@@ -507,7 +513,7 @@
             <td data-label="Date & Time"><span style="font-size: 0.78rem; color: var(--text-muted); white-space: nowrap;">📅 ${dateFormatted}</span></td>
             <td data-label="Photo">
               ${post.imageUrl 
-                ? `<img src="${post.imageUrl}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="window.open('${post.imageUrl}', '_blank')" />` 
+                ? `<img src="${post.imageUrl}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="openImageLightbox('${post.imageUrl}')" title="Click to view photo in full screen" />` 
                 : '<span style="color: var(--text-muted); font-size: 0.8rem;">No photo</span>'}
             </td>
             <td data-label="Status">
@@ -599,10 +605,13 @@
     }
 
     function mergeUserSources(firestoreUsers) {
+      const deletedList = JSON.parse(localStorage.getItem('deletedUsersList') || '[]');
+      const deletedSet = new Set(deletedList.map(e => (e || '').toLowerCase()));
+
       let localUsers = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
       
-      // Ensure default accounts exist if storage is empty
-      if (localUsers.length === 0) {
+      // Ensure default accounts exist if storage is empty and no deletions have occurred
+      if (localUsers.length === 0 && deletedList.length === 0) {
         localUsers = [
           { name: 'Joshua Taiwo', matric: 'MRH/2022/129', email: 'joshuataiwo@student.oauife.edu.ng', whatsapp: '08123456789', contactPref: 'both', status: 'active', role: 'student' },
           { name: 'Samuel Ezekiel', matric: 'SWE/2023/072', email: 'e.samuel.swe2023072@student.oauife.edu.ng', whatsapp: '08098765432', contactPref: 'both', status: 'active', role: 'student' }
@@ -612,10 +621,10 @@
 
       const userMap = new Map();
 
-      // 1. Add local accounts
+      // 1. Add local accounts (skipping deleted)
       localUsers.forEach(u => {
         const em = (u.email || '').toLowerCase();
-        if (em) {
+        if (em && !deletedSet.has(em)) {
           userMap.set(em, {
             name: u.name || 'Student User',
             matric: u.matric || 'N/A',
@@ -629,10 +638,10 @@
         }
       });
 
-      // 2. Add Firestore users collection
+      // 2. Add Firestore users collection (skipping deleted)
       firestoreUsers.forEach(u => {
         const em = (u.email || '').toLowerCase();
-        if (em) {
+        if (em && !deletedSet.has(em)) {
           const existing = userMap.get(em) || {};
           userMap.set(em, {
             name: u.name || existing.name || 'Student User',
@@ -647,10 +656,10 @@
         }
       });
 
-      // 3. Extract unique posters from portal items cache so posters automatically show up
+      // 3. Extract unique posters from portal items cache (skipping deleted)
       (adminPostsCache || []).forEach(p => {
         const em = (p.email || '').toLowerCase();
-        if (em && !userMap.has(em)) {
+        if (em && !deletedSet.has(em) && !userMap.has(em)) {
           userMap.set(em, {
             name: p.userName || 'Student Poster',
             matric: 'N/A',
@@ -870,16 +879,29 @@
 
     // Delete User Account Handler
     window.deleteUserAccount = function(email) {
+      const targetEmail = (email || '').toLowerCase();
+      if (!targetEmail) return;
+
       if (confirm(`Permanently delete account for ${email}? This will remove their user credentials.`)) {
+        // 1. Persist to deletedUsersList blacklist in localStorage
+        const deletedList = JSON.parse(localStorage.getItem('deletedUsersList') || '[]');
+        if (!deletedList.includes(targetEmail)) {
+          deletedList.push(targetEmail);
+          localStorage.setItem('deletedUsersList', JSON.stringify(deletedList));
+        }
+
+        // 2. Remove from local registered accounts
         const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
-        const updatedAccounts = registeredAccounts.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+        const updatedAccounts = registeredAccounts.filter(u => (u.email || '').toLowerCase() !== targetEmail);
         localStorage.setItem('registeredAccounts', JSON.stringify(updatedAccounts));
 
+        // 3. Delete doc from Firestore users collection
         if (typeof db !== 'undefined') {
-          db.collection('users').doc(email.toLowerCase()).delete()
+          db.collection('users').doc(targetEmail).delete()
             .then(() => showToast(`Account ${email} deleted permanently.`, 'info'))
             .catch(err => console.warn(err));
         }
+
         fetchAdminUserData();
       }
     };

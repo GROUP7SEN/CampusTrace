@@ -479,13 +479,16 @@ textarea { resize: vertical; min-height: 90px; }
 
 /* ── Badges ── */
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.68rem;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .badge-missing  { background: rgba(255,255,255,0.05); color: #aaa; border: 1px solid var(--border-light); }
@@ -834,6 +837,73 @@ textarea { resize: vertical; min-height: 90px; }
   white-space: nowrap;
 }
 
+/* ── Password Input Toggle Eye Styling ── */
+.pwd-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.pwd-input-group input {
+  padding-right: 44px !important;
+  width: 100%;
+}
+
+.pwd-toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  padding: 4px 6px;
+  cursor: pointer;
+  line-height: 1;
+  user-select: none;
+  transition: opacity var(--transition);
+  z-index: 5;
+}
+
+.pwd-toggle-btn:hover {
+  opacity: 0.8;
+}
+
+/* ── Spinner & Loading Indicators ── */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.spinner-lg {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+  border-top-color: #818cf8;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 44px 20px;
+  color: var(--text-muted);
+  gap: 12px;
+  font-size: 0.875rem;
+}
+
 /* ── Desktop & Mobile Responsive Table System ── */
 .admin-table-wrapper {
   width: 100%;
@@ -841,20 +911,20 @@ textarea { resize: vertical; min-height: 90px; }
   -webkit-overflow-scrolling: touch;
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  margin-top: 10px;
 }
 
 .admin-table {
   width: 100%;
+  min-width: 880px;
   border-collapse: collapse;
-  table-layout: auto;
 }
 
 .admin-table th, .admin-table td {
   padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid var(--border);
-  vertical-align: top;
-  word-break: break-word;
+  vertical-align: middle;
 }
 
 .admin-table th {
@@ -867,25 +937,26 @@ textarea { resize: vertical; min-height: 90px; }
   white-space: nowrap;
 }
 
-/* Explicit minimum widths for desktop so text doesn't squish into narrow vertical slices */
-.admin-table th:nth-child(1), .admin-table td:nth-child(1) { min-width: 100px; }
-.admin-table th:nth-child(2), .admin-table td:nth-child(2) { min-width: 240px; }
-.admin-table th:nth-child(3), .admin-table td:nth-child(3) { min-width: 120px; }
-.admin-table th:nth-child(4), .admin-table td:nth-child(4) { min-width: 160px; }
+/* Explicit column behavior for desktop */
+.admin-table th:nth-child(1), .admin-table td:nth-child(1) { min-width: 100px; white-space: nowrap; }
+.admin-table th:nth-child(2), .admin-table td:nth-child(2) { min-width: 220px; }
+.admin-table th:nth-child(3), .admin-table td:nth-child(3) { min-width: 120px; white-space: nowrap; }
+.admin-table th:nth-child(4), .admin-table td:nth-child(4) { min-width: 170px; }
 .admin-table th:nth-child(5), .admin-table td:nth-child(5) { min-width: 170px; white-space: nowrap; }
-.admin-table th:nth-child(6), .admin-table td:nth-child(6) { min-width: 80px; }
-.admin-table th:nth-child(7), .admin-table td:nth-child(7) { min-width: 110px; }
-.admin-table th:nth-child(8), .admin-table td:nth-child(8) { min-width: 190px; text-align: right; }
+.admin-table th:nth-child(6), .admin-table td:nth-child(6) { min-width: 80px; white-space: nowrap; }
+.admin-table th:nth-child(7), .admin-table td:nth-child(7) { min-width: 110px; white-space: nowrap; }
+.admin-table th:nth-child(8), .admin-table td:nth-child(8) { min-width: 190px; text-align: right; white-space: nowrap; }
 
 .read-more-wrapper {
   display: inline;
 }
 
 /* Responsive Mobile Card View for Tables */
-@media (max-width: 860px) {
+@media (max-width: 1024px) {
   .admin-table-wrapper {
     border: none;
     background: transparent;
+    overflow-x: visible;
   }
 
   .admin-table, 
@@ -926,10 +997,17 @@ textarea { resize: vertical; min-height: 90px; }
     text-align: right !important;
   }
 
-  .admin-table td:last-child {
+  .admin-table td[data-label="Actions"] {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
     border-bottom: none;
-    padding-top: 8px;
-    justify-content: flex-end;
+    padding-top: 10px;
+  }
+
+  .admin-table td[data-label="Actions"] > div {
+    width: 100%;
+    justify-content: flex-start !important;
   }
 
   .admin-table td::before {

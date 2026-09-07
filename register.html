@@ -55,7 +55,10 @@
 
         <div class="form-group">
           <label for="reg-password">Password <span style="font-weight: 400; color: var(--text-muted); font-size: 0.75rem;">(Min. 4 characters)</span></label>
-          <input type="password" id="reg-password" placeholder="Create a password (min 4 characters)" minlength="4" required />
+          <div class="pwd-input-group">
+            <input type="password" id="reg-password" placeholder="Create a password (min 4 characters)" minlength="4" required />
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('reg-password', this)" title="Toggle password visibility">👁️</button>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Register Account</button>
@@ -109,6 +112,19 @@
     // Registration Validation & Account Creation
     document.getElementById('register-form').addEventListener('submit', function (e) {
       e.preventDefault();
+      const submitBtn = this.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...';
+      }
+
+      function resetBtn() {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Register Account';
+        }
+      }
+
       const name = document.getElementById('reg-name').value.trim();
       const matric = document.getElementById('reg-matric').value.trim();
       const email = document.getElementById('reg-email').value.trim();
@@ -118,32 +134,42 @@
 
       // 1. Name Check
       if (name.length < 3) {
+        resetBtn();
         return showToast('Please enter your full name (at least 3 characters).', 'warning');
       }
 
       // 2. Matriculation Number Regex Check (Format: SEN/2021/001 or CSC/2020/045)
       const matricRegex = /^[A-Za-z]{2,5}\/\d{4}\/\d{3,}$/;
       if (!matricRegex.test(matric)) {
+        resetBtn();
         return showToast('Invalid Matric Number format. Example: SEN/2021/001', 'error');
       }
 
       // 3. Email Regex Check
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
+        resetBtn();
         return showToast('Please enter a valid school email address.', 'error');
       }
 
       // 4. WhatsApp Number Check
       if (whatsapp.length < 10) {
+        resetBtn();
         return showToast('Please enter a valid WhatsApp phone number.', 'warning');
       }
 
       // 5. Password Length Check (min 4 characters)
       if (password.length < 4) {
+        resetBtn();
         return showToast('Password must be at least 4 characters long.', 'warning');
       }
 
       const userData = { name, matric, email, whatsapp, contactPref, password, status: 'active', role: 'student' };
+
+      // Remove from deletedUsersList if re-registering
+      const deletedList = JSON.parse(localStorage.getItem('deletedUsersList') || '[]');
+      const updatedDeletedList = deletedList.filter(e => (e || '').toLowerCase() !== email.toLowerCase());
+      localStorage.setItem('deletedUsersList', JSON.stringify(updatedDeletedList));
 
       // Save account to registeredAccounts registry for login lookup
       const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');

@@ -56,6 +56,49 @@ function formatDescWithReadMore(text, limit = 90) {
   `;
 }
 
+// Fullscreen Image Lightbox Modal Viewer
+window.openImageLightbox = function(src) {
+  if (!src) return;
+  let lightbox = document.getElementById('image-lightbox-modal');
+  if (!lightbox) {
+    lightbox = document.createElement('div');
+    lightbox.id = 'image-lightbox-modal';
+    lightbox.className = 'modal-overlay';
+    lightbox.style.zIndex = '999999';
+    lightbox.style.background = 'rgba(0, 0, 0, 0.88)';
+    lightbox.style.backdropFilter = 'blur(6px)';
+    lightbox.style.display = 'flex';
+    lightbox.style.alignItems = 'center';
+    lightbox.style.justifyContent = 'center';
+    lightbox.innerHTML = `
+      <div style="position: relative; max-width: 94vw; max-height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: center;" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal('image-lightbox-modal')" style="position: absolute; top: -42px; right: 0; color: #fff; font-size: 32px; background: none; border: none; cursor: pointer; opacity: 0.9;" title="Close preview">&times;</button>
+        <img id="lightbox-target-img" src="" alt="Full Resolution Preview" style="max-width: 92vw; max-height: 86vh; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-light); background: #0b0c10; box-shadow: 0 16px 48px rgba(0,0,0,0.9);" />
+      </div>
+    `;
+    lightbox.onclick = function() { closeModal('image-lightbox-modal'); };
+    document.body.appendChild(lightbox);
+  }
+
+  const imgEl = document.getElementById('lightbox-target-img');
+  if (imgEl) imgEl.src = src;
+  openModal('image-lightbox-modal');
+};
+
+// Universal Password Visibility Toggle Handler
+window.togglePasswordVisibility = function(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (btn) btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    if (btn) btn.textContent = '👁️';
+  }
+};
+
 // Auth Guard & User Session
 const currentUserName = localStorage.getItem('userName') || '';
 const currentUserEmail = localStorage.getItem('userEmail') || '';
@@ -286,7 +329,7 @@ function renderFeed() {
               ${post.delegatedNotes ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Instructions: ${post.delegatedNotes}</div>` : ''}
             </div>
           ` : ''}
-          ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img" alt="${post.title}" onclick="window.open('${post.imageUrl}', '_blank')" style="cursor: pointer;" title="Click to view full photo" />` : ''}
+          ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img" alt="${post.title}" onclick="openImageLightbox('${post.imageUrl}')" style="cursor: pointer;" title="Click to view full screen photo" />` : ''}
         </div>
 
         <div class="card-footer">
@@ -326,6 +369,13 @@ document.getElementById('report-lost-form')?.addEventListener('submit', function
     return showToast('🚫 Account suspended by campus administration. You cannot publish new listings.', 'error');
   }
 
+  const submitBtn = this.querySelector('button[type="submit"]');
+  const origText = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span> Publishing Report...';
+  }
+
   const title = document.getElementById('lost-title').value.trim();
   const category = document.getElementById('lost-category').value;
   const desc = document.getElementById('lost-desc').value.trim();
@@ -350,6 +400,11 @@ document.getElementById('report-lost-form')?.addEventListener('submit', function
   }).catch(err => {
     console.error(err);
     showToast('Failed to publish report. Please check connection.', 'error');
+  }).finally(() => {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origText;
+    }
   });
 });
 
@@ -410,7 +465,7 @@ document.getElementById('report-found-form')?.addEventListener('submit', async f
   if (!imageFile) return showToast('Please attach a photo of the found item.', 'warning');
 
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Processing Photo...';
+  submitBtn.innerHTML = '<span class="spinner"></span> Uploading & Publishing...';
 
   try {
     // Step 1: Compress image client-side to ensure fast upload
