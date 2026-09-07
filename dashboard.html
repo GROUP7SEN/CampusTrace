@@ -24,7 +24,8 @@
       <a href="index.html">Home</a>
       <button onclick="openModal('lost-modal')" class="btn btn-warning" style="padding: 7px 14px; font-size: 0.825rem;">+ Report Missing</button>
       <button onclick="openModal('found-modal')" class="btn btn-success" style="padding: 7px 14px; font-size: 0.825rem;">+ Report Found</button>
-      <span id="user-display" style="font-size: 0.85rem; opacity: 0.9; color: #cbd5e1;"></span>
+      <button onclick="openSettingsModal()" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">⚙️ Settings</button>
+      <span id="user-display" class="user-display"></span>
       <button id="logoutBtn" class="btn btn-danger" style="padding: 6px 14px; font-size: 0.8rem;">Logout</button>
     </div>
   </nav>
@@ -176,6 +177,53 @@
         <div style="display: flex; gap: 12px; margin-top: 8px;">
           <button type="submit" class="btn btn-success" id="submit-found-btn" style="flex: 1;">Publish Found Item</button>
           <button type="button" class="btn btn-outline" onclick="closeModal('found-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Settings Modal Overlay -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Account Settings</h2>
+        <button class="modal-close" onclick="closeModal('settings-modal')">&times;</button>
+      </div>
+      <p class="subtitle">Update your profile, WhatsApp contact number, and contact preferences.</p>
+
+      <form id="settings-form">
+        <div class="form-group">
+          <label for="set-name">Full Name</label>
+          <input type="text" id="set-name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="set-email">Email Address</label>
+          <input type="email" id="set-email" disabled style="opacity: 0.7; cursor: not-allowed;" />
+        </div>
+
+        <div class="form-group">
+          <label for="set-whatsapp">WhatsApp Number</label>
+          <input type="tel" id="set-whatsapp" placeholder="e.g. 08123456789" required />
+        </div>
+
+        <div class="form-group">
+          <label for="set-contact-pref">Contact Preference</label>
+          <select id="set-contact-pref">
+            <option value="both">WhatsApp & Email (Recommended)</option>
+            <option value="whatsapp">WhatsApp Only</option>
+            <option value="email">Email Only</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="set-password">New Password <span style="font-weight:400; color:var(--text-muted); font-size:0.75rem;">(Leave blank to keep current)</span></label>
+          <input type="password" id="set-password" placeholder="Enter new password (optional)" minlength="4" />
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Settings</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('settings-modal')">Cancel</button>
         </div>
       </form>
     </div>

@@ -35,11 +35,11 @@
       <form id="register-form">
         <div class="form-group">
           <label for="reg-name">Full Name</label>
-          <input type="text" id="reg-name" placeholder="e.g. Samkiel John" minlength="3" required />
+          <input type="text" id="reg-name" placeholder="e.g. Yusuf Ilori" minlength="3" required />
         </div>
 
         <div class="form-group">
-          <label for="reg-matric">Matriculation Number <span style="font-weight: 400; color: var(--text-muted); font-size: 0.75rem;">(Format: SEN/2021/001)</span></label>
+          <label for="reg-matric">Matriculation Number</label>
           <input type="text" id="reg-matric" placeholder="e.g. SEN/2021/001" required />
         </div>
 
@@ -49,17 +49,8 @@
         </div>
 
         <div class="form-group">
-          <label for="reg-whatsapp">WhatsApp Number <span style="font-weight: 400; color: var(--text-muted); font-size: 0.75rem;">(e.g. 08123456789)</span></label>
+          <label for="reg-whatsapp">WhatsApp Number</label>
           <input type="tel" id="reg-whatsapp" placeholder="e.g. 08123456789" required />
-        </div>
-
-        <div class="form-group">
-          <label for="reg-contact-pref">Contact Preference</label>
-          <select id="reg-contact-pref">
-            <option value="both">WhatsApp & Email (Recommended)</option>
-            <option value="whatsapp">WhatsApp Only</option>
-            <option value="email">Email Only</option>
-          </select>
         </div>
 
         <div class="form-group">
@@ -115,14 +106,14 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
   <script src="script.js"></script>
   <script>
-"    // Registration Validation & Account Creation
+    // Registration Validation & Account Creation
     document.getElementById('register-form').addEventListener('submit', function (e) {
       e.preventDefault();
       const name = document.getElementById('reg-name').value.trim();
       const matric = document.getElementById('reg-matric').value.trim();
       const email = document.getElementById('reg-email').value.trim();
       const whatsapp = document.getElementById('reg-whatsapp').value.trim();
-      const contactPref = document.getElementById('reg-contact-pref').value;
+      const contactPref = 'both';
       const password = document.getElementById('reg-password').value.trim();
 
       // 1. Name Check
@@ -190,7 +181,7 @@
       setTimeout(() => {
         window.location.href = 'dashboard.html';
       }, 800);
-    });"
+    });
   </script>
 </body>
 </html>
