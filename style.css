@@ -1,4 +1,10 @@
-/* Global Reset */
+html {
+  overflow-y: scroll;
+}
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -7,42 +13,144 @@ body {
   color: #334155;
 }
 
-/* Navbar */
+/* ==========================================================================
+   2. Header & Navigation (Fixed shaking & flex wrapping)
+   ========================================================================== */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #0b3c5d;
-  padding: 15px 30px;
+  padding: 12px 24px;
   color: white;
   position: sticky;
   top: 0;
   z-index: 100;
+  white-space: nowrap; /* Prevents wrapping causing layout shaking */
+  gap: 15px;
+  box-sizing: border-box;
+  height: 65px;
 }
 
 .logo {
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.nav-links {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 
-.nav-links a {
+.school-logo {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Header Search Bar */
+.header-search {
+  flex: 0 1 300px;
+}
+
+.header-search input {
+  width: 100%;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.header-search input:focus {
+  border-color: #f1c40f;
+  box-shadow: 0 0 5px rgba(241, 196, 15, 0.4);
+}
+
+/* Header Right Action Group */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+#user-display {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Report Hub Dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.action-btn {
+  background-color: #1d507a;
   color: white;
-  text-decoration: none;
-  font-size: 0.9rem;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
+.action-btn:hover {
+  background-color: #153c5c;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #ffffff;
+  min-width: 180px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  z-index: 1000; 
+  top: 100%;
+  right: 0;
+  
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 10px 14px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+  border-radius: 6px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Admin Button */
+.admin-btn {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.admin-btn:hover {
+  background: #000;
+}
+
+/* Logout Button */
 .logout-btn {
   background-color: #d9534f;
   color: #ffffff;
   border: none;
   padding: 8px 14px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
 }
@@ -51,7 +159,9 @@ body {
   background-color: #c9302c;
 }
 
-/* Page Layout */
+/* ==========================================================================
+   3. Page Layout & Cards
+   ========================================================================== */
 .main-container {
   display: flex;
   flex-direction: column;
@@ -66,8 +176,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 600px;
-  box-sizing: border-box;
+  max-width: 650px;
 }
 
 .subtitle {
@@ -76,7 +185,9 @@ body {
   margin-bottom: 1.2rem;
 }
 
-/* Feed & Cards */
+/* ==========================================================================
+   4. Feed, Posts & Cards
+   ========================================================================== */
 .feed-container {
   display: flex;
   flex-direction: column;
@@ -92,6 +203,10 @@ body {
 
 .missing-card {
   border-left: 4px solid #f59e0b;
+}
+
+.found-card {
+  border-left: 4px solid #10b981;
 }
 
 .card-header {
@@ -113,8 +228,8 @@ body {
   font-weight: bold;
 }
 
-.alt-avatar { background-color: #10b981; }
 .missing-avatar { background-color: #f59e0b; }
+.found-avatar { background-color: #10b981; }
 
 .user-info {
   display: flex;
@@ -126,10 +241,11 @@ body {
   color: #94a3b8;
 }
 
-.feed-img {
+.post-image {
   width: 100%;
-  height: auto;
-  border-radius: 6px;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
   margin-top: 10px;
 }
 
@@ -137,15 +253,8 @@ body {
   margin-top: 12px;
   display: flex;
   align-items: center;
-}
-
-.sub-tag {
-  background-color: #dcfce7;
-  color: #15803d;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .email-btn {
@@ -163,19 +272,29 @@ body {
   background-color: #1d4ed8;
 }
 
-/* Form Styles */
+.resolved-card { opacity: 0.65; background-color: #f5f5f5; }
+.badge-resolved { color: #2e7d32; font-size: 0.8em; font-weight: bold; }
+
+.resolve-btn { background-color: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+.delete-btn { background-color: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+.resolve-btn:hover { background-color: #0b7dda; }
+.delete-btn:hover { background-color: #da190b; }
+.no-posts { text-align: center; color: #777; margin: 20px 0; }
+
+/* ==========================================================================
+   5. Forms & Inputs
+   ========================================================================== */
 form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-input, textarea {
+input, textarea, select {
   width: 100%;
   padding: 10px;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
-  box-sizing: border-box;
 }
 
 button[type="submit"] {
@@ -191,116 +310,45 @@ button[type="submit"] {
 button.warning-btn {
   background-color: #d97706;
 }
-/* Update .logo to align the image and text horizontally */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* Space between the logo image and the text */
-  font-weight: bold;
-  font-size: 1.2rem;
+
+button.success-btn {
+  background-color: #10b981;
 }
 
-/* Styling for the school logo image */
-.school-logo {
-  height: 40px;          /* Sets a fixed height so it fits cleanly in the navbar */
-  width: auto;           /* Maintains the natural aspect ratio */
-  object-fit: contain;   /* Ensures the image isn't stretched or distorted */
-  padding: 2px;          /* Small inner padding around the image */
-  margin-right: 5px;     /* Extra spacing to the right of the image */
-}
-/* Search & Filter Bar */
 .filter-container {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.filter-container input, .filter-container select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.filter-container input { flex: 2; }
-.filter-container select { flex: 1; }
-
-/* Dynamic Post Styles */
-.post-image {
-  width: 100%;
-  max-height: 250px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-.resolved-card { opacity: 0.65; background-color: #f5f5f5; }
-.badge-resolved { color: #2e7d32; font-size: 0.8em; font-weight: bold; }
-
-/* Buttons & Feedback */
-.resolve-btn { background-color: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-.delete-btn { background-color: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-.resolve-btn:hover { background-color: #0b7dda; }
-.delete-btn:hover { background-color: #da190b; }
-.no-posts { text-align: center; color: #777; margin: 20px 0; }
-
-/* Mobile Adaptations */
-@media (max-width: 600px) {
-  .main-container { padding: 10px; }
-  .navbar { flex-direction: column; gap: 10px; text-align: center; }
-  .filter-container { flex-direction: column; }
-}
-.school-logo {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-}
-/* Style the main navigation container */
-header, nav {
-  display: flex;
-  align-items: center; /* Vertically aligns logo and text in the center */
-  justify-content: space-between; /* Spreads out logo/brand and nav links */
-  padding: 10px 20px;
-}
-
-/* Ensure the logo keeps a neat size and doesn't stretch */
-.school-logo {
-  height: 40px; /* Adjust height to fit your navbar size */
-  width: auto;
-  object-fit: contain;
-}
-
-/* Optional: If the logo sits right next to a text heading inside a wrapper div */
-.brand-container {
-  display: flex;
-  align-items: center;
-  gap: 12px; /* Adds space between the logo image and text */
-}
-/* Styles for screens smaller than 768px (Tablets & Phones) */
+/* ==========================================================================
+   6. Mobile Adaptation
+   ========================================================================== */
 @media (max-width: 768px) {
-  header, nav {
-    flex-direction: column; /* Stacks the logo and links vertically */
-    align-items: center;
-    text-align: center;
-    padding: 15px;
-  }
-
-  /* Stacks navigation links vertically with clean spacing */
-  nav ul {
+  .navbar {
     flex-direction: column;
-    padding: 0;
-    width: 100%;
-    gap: 10px;
-    margin-top: 15px;
+    padding: 15px;
+    white-space: normal;
   }
 
-  nav a {
-    display: block;
-    padding: 10px;
+  .header-search {
     width: 100%;
+    flex: 1 1 auto;
   }
 
-  .school-logo {
-    height: 35px; /* Slightly smaller logo for mobile */
+  .nav-right {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
   }
+}
+/* This Prevents scrollbar jump by reserving space permanently */
+html {
+  overflow-y: scroll;
+}
+
+/* This Locks the navbar to a fixed height so dropdowns don't resize it */
+.navbar {
+  height: 65px; /* Sets a rigid container height */
+  box-sizing: border-box;
 }

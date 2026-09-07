@@ -6,7 +6,7 @@
   <title>Login - OAU Lost & Found</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Add your login background image here */
+    
     body {
       background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4Do1vIYTP4ThPvF7UkXdqRAX7KO3Kk_jD0AzrZX0NTWEITxDdILCLkrd3&s=10');
       background-size: cover;
@@ -54,7 +54,9 @@
 <input 
   type="email" 
   id="school-email" 
-  placeholder="e.g., student@student.oau.edu.ng" 
+  placeholder="e.g., student@student.oauife" 
+  pattern="^[a-zA-Z0-9._%+-]+@student\.oauife$" 
+  title="Please enter a valid school email ending in @student.oauife"
   required 
 />
 
@@ -64,22 +66,28 @@
   </main>
 
   <script>
-    // Handle Login Form Submission
-    document.getElementById('login-form').addEventListener('submit', function (e) {
-  e.preventDefault();
+  // Handle Login Form Submission
+  document.getElementById('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
 
-  const fullName = document.getElementById('full-name').value;
-  const matricNo = document.getElementById('matric-no').value;
-  const schoolEmail = document.getElementById('school-email').value;
+    const fullName = document.getElementById('full-name').value;
+    const matricNo = document.getElementById('matric-no').value;
+    const schoolEmail = document.getElementById('school-email').value.trim().toLowerCase();
 
-  // Save details to LocalStorage
-  localStorage.setItem('userName', fullName);
-  localStorage.setItem('userMatric', matricNo);
-  localStorage.setItem('userEmail', schoolEmail);
+    // Strict domain check (MUST be before localStorage saving)
+    if (!schoolEmail.endsWith('@student.oauife')) {
+      alert('Access Denied: Only valid school emails ending with @student.oauife are permitted.');
+      return;
+    }
 
-  alert('Login successful!');
-  window.location.href = 'index.html';
-});
-  </script>
+    // Save details to LocalStorage
+    localStorage.setItem('userName', fullName);
+    localStorage.setItem('userMatric', matricNo);
+    localStorage.setItem('userEmail', schoolEmail);
+
+    alert('Login successful!');
+    window.location.href = 'index.html';
+  });
+</script>
 </body>
 </html>

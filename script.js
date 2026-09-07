@@ -8,15 +8,23 @@ const firebaseConfig = {
   appId: "1:1039137571247:web:981f9871e5e1588b1faf5a"
 };
 
-// Initialize Firebase Services
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const storage = firebase.storage();
 
-// Get Saved User Details
+// Helper: XSS Sanitization
+function sanitizeInput(str) {
+  if (!str) return '';
+  const temp = document.createElement('div');
+  temp.textContent = str;
+  return temp.innerHTML;
+}
+
+// User Context
 const currentUserName = localStorage.getItem('userName') || 'Anonymous Student';
 const currentUserEmail = localStorage.getItem('userEmail') || '';
 const currentUserMatric = localStorage.getItem('userMatric') || '';
+const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
 if (!currentUserEmail) {
   window.location.href = 'login.html';
@@ -24,16 +32,29 @@ if (!currentUserEmail) {
 
 const userDisplay = document.getElementById('user-display');
 if (userDisplay) {
-  userDisplay.textContent = `${currentUserName} (${currentUserMatric})`;
+  const adminBadge = isAdmin ? ' 🔑 [Admin]' : '';
+  userDisplay.textContent = `${sanitizeInput(currentUserName)} (${sanitizeInput(currentUserMatric)})${adminBadge}`;
 }
 
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
+// Admin Trigger Function
+window.checkAdminAccess = function() {
+  const code = prompt("Enter Admin Access Code:");
+  if (code === "OAU_ADMIN_2026") {
+    localStorage.setItem('isAdmin', 'true');
+    alert("Admin privileges granted!");
+    renderFeed(); // Dynamically updates UI without triggering a page refresh
+  } else {
+    alert("Invalid passcode.");
+  }
+};
+
 let localPostsCache = [];
 
-// Real-Time Firestore Listener
+// Firestore Listener
 db.collection('portal_items').onSnapshot((snapshot) => {
   localPostsCache = [];
   snapshot.docs.forEach((doc) => {
@@ -42,17 +63,19 @@ db.collection('portal_items').onSnapshot((snapshot) => {
   renderFeed();
 });
 
-// Render Feed with Filtering and Custom Controls
+// Render Feeds
 function renderFeed() {
   const feedContainer = document.querySelector('.feed-container');
-  const searchQuery = document.getElementById('search-input')?.value.toLowerCase() || '';
+  const searchQuery = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
   const filterCategory = document.getElementById('category-filter')?.value || 'all';
 
   if (!feedContainer) return;
   feedContainer.innerHTML = '';
 
   const filteredPosts = localPostsCache.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery) || post.desc.toLowerCase().includes(searchQuery);
+    const postTitle = (post.title || '').toLowerCase();
+    const postDesc = (post.desc || '').toLowerCase();
+    const matchesSearch = postTitle.includes(searchQuery) || postDesc.includes(searchQuery);
     const matchesCategory = filterCategory === 'all' || post.type === filterCategory;
     return matchesSearch && matchesCategory;
   });
@@ -64,43 +87,51 @@ function renderFeed() {
 
   filteredPosts.forEach(post => {
     const isOwner = post.email === currentUserEmail;
+    const canDelete = isOwner || isAdmin;
     const card = document.createElement('div');
     card.className = `feed-card ${post.type}-card ${post.resolved ? 'resolved-card' : ''}`;
 
+    const safeTitle = sanitizeInput(post.title);
+    const safeDesc = sanitizeInput(post.desc);
+    const safeUserName = sanitizeInput(post.userName);
+    const safeInitials = sanitizeInput(post.initials);
+
+    const emailSubject = encodeURIComponent(`Regarding ${post.title} on OAU Lost Portal`);
+    const emailBody = encodeURIComponent(`Hello ${post.userName},\n\nI am reaching out regarding your listing: "${post.title}".\n\nSender Details:\nName: ${currentUserName}\nEmail: ${currentUserEmail}`);
+    const mailtoUrl = `mailto:${post.email}?subject=${emailSubject}&body=${emailBody}`;
+
     card.innerHTML = `
       <div class="card-header">
-        <div class="user-avatar ${post.type}-avatar">${post.initials}</div>
+        <div class="user-avatar ${post.type}-avatar">${safeInitials}</div>
         <div class="user-info">
-          <strong>${post.userName}</strong>
+          <strong>${safeUserName} ${post.stars ? `⭐ (${post.stars})` : ''}</strong>
           <span class="post-time">${post.type.toUpperCase()} • ${post.statusText || 'Active'}</span>
         </div>
       </div>
       <div class="card-body">
-        <h3>${post.title} ${post.resolved ? '<span class="badge-resolved">(Resolved)</span>' : ''}</h3>
-        <p>${post.desc}</p>
+        <h3>${safeTitle} ${post.resolved ? '<span class="badge-resolved">(Resolved)</span>' : ''}</h3>
+        <p>${safeDesc}</p>
         ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-image" alt="Item Image" />` : ''}
       </div>
       <div class="card-footer">
-        <a href="mailto:${post.email}?subject=Regarding ${post.title} on OAU Lost Portal" class="email-btn">
-          ✉️ Contact Owner
-        </a>
-        ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}')" class="resolve-btn">Mark Resolved</button>` : ''}
-        ${isOwner ? `<button onclick="deletePost('${post.id}')" class="delete-btn">Delete</button>` : ''}
+        <a href="${mailtoUrl}" class="email-btn">✉️ Contact via School Email</a>
+        ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}', '${post.email}', '${post.type}')" class="resolve-btn">Mark Resolved</button>` : ''}
+        ${canDelete ? `<button onclick="deletePost('${post.id}')" class="delete-btn">Delete ${isAdmin && !isOwner ? '(Admin)' : ''}</button>` : ''}
       </div>
     `;
     feedContainer.appendChild(card);
   });
 }
 
-// Search and Filter Input Events
+// Event Listeners
 document.getElementById('search-input')?.addEventListener('input', renderFeed);
 document.getElementById('category-filter')?.addEventListener('change', renderFeed);
 
 // Submit Missing Item
 document.getElementById('report-lost-form')?.addEventListener('submit', function (e) {
   e.preventDefault();
-  const title = document.getElementById('lost-title').value;
-  const desc = document.getElementById('lost-desc').value;
+  const title = document.getElementById('lost-title').value.trim();
+  const desc = document.getElementById('lost-desc').value.trim();
 
   db.collection('portal_items').add({
     type: 'missing',
@@ -115,46 +146,78 @@ document.getElementById('report-lost-form')?.addEventListener('submit', function
   }).then(() => {
     alert('Missing item report published!');
     this.reset();
+    window.location.href = 'index.html';
   });
 });
 
-// Submit Found Item with Firebase Storage Upload
-document.getElementById('report-found-form')?.addEventListener('submit', function (e) {
-  e.preventDefault();
-  const title = document.getElementById('found-title').value;
-  const desc = document.getElementById('found-desc').value;
-  const imageFile = document.getElementById('found-img').files[0];
+// Submit Found Item (Base64 Conversion Solution)
+const foundForm = document.getElementById('report-found-form');
+if (foundForm) {
+  foundForm.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-  if (!imageFile) return alert('Please select a photo of the item.');
+    const titleInput = document.getElementById('found-title');
+    const descInput = document.getElementById('found-desc');
+    const fileInput = document.getElementById('found-img');
 
-  const storageRef = storage.ref(`found_items/${Date.now()}_${imageFile.name}`);
+    if (!titleInput || !descInput || !fileInput) {
+      alert('Error: Form inputs could not be found.');
+      return;
+    }
 
-  storageRef.put(imageFile)
-    .then(snapshot => snapshot.ref.getDownloadURL())
-    .then(downloadURL => {
-      return db.collection('portal_items').add({
+    const title = titleInput.value.trim();
+    const desc = descInput.value.trim();
+    const imageFile = fileInput.files[0];
+
+    if (!imageFile) {
+      alert('Please attach a photo.');
+      return;
+    }
+
+    const submitBtn = this.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publishing...';
+    }
+
+    // Convert image file directly to a Base64 string
+    const reader = new FileReader();
+    reader.onload = function (evt) {
+      const base64Image = evt.target.result;
+
+      // Save directly to Firestore database
+      db.collection('portal_items').add({
         type: 'found',
         title: title,
         desc: desc,
-        imageUrl: downloadURL,
+        imageUrl: base64Image,
         userName: currentUserName,
         email: currentUserEmail,
         initials: getInitials(currentUserName),
         resolved: false,
         statusText: 'Found Item',
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        alert('Found item report published successfully!');
+        foundForm.reset();
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        if (previewContainer) previewContainer.style.display = 'none';
+        window.location.href = 'index.html';
+      })
+      .catch(error => {
+        console.error('Firestore Error:', error);
+        alert('Publication failed: ' + error.message);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Post Found Item';
+        }
       });
-    })
-    .then(() => {
-      alert('Found item report published with image!');
-      this.reset();
-      document.getElementById('imagePreviewContainer').style.display = 'none';
-    })
-    .catch(err => {
-      console.error(err);
-      alert('Error uploading image. Make sure Storage is enabled in Firebase Console.');
-    });
-});
+    };
+
+    reader.readAsDataURL(imageFile);
+  });
+}
 
 // Photo Preview
 document.getElementById('found-img')?.addEventListener('change', function (e) {
@@ -169,21 +232,26 @@ document.getElementById('found-img')?.addEventListener('change', function (e) {
   }
 });
 
-// Mark Item as Resolved
-window.markResolved = function(id) {
+// Mark Resolved & Good Samaritan Award
+window.markResolved = function(id, email, type) {
   db.collection('portal_items').doc(id).update({ resolved: true })
-    .then(() => alert('Item status updated to Resolved!'));
+    .then(() => {
+      alert('Item marked as resolved!');
+      if (type === 'found') {
+        alert('⭐ Good Samaritan reward point assigned to finder!');
+      }
+    });
 };
 
 // Delete Post
 window.deletePost = function(id) {
   if (confirm('Are you sure you want to delete this post?')) {
     db.collection('portal_items').doc(id).delete()
-      .then(() => alert('Post deleted successfully!'));
+      .then(() => alert('Post deleted!'));
   }
 };
 
-// Logout Handler
+// Logout
 document.getElementById('logoutBtn')?.addEventListener('click', function () {
   localStorage.clear();
   window.location.href = 'login.html';

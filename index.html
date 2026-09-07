@@ -3,75 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OAU Lost & Found Portal</title>
+  <title>OAU Lost & Found - Campus Feed</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Navigation -->
-  <nav class="navbar">
+  <!-- Navigation Header -->
+  <header class="navbar">
     <div class="logo">
       <img src="logo.png" alt="OAU Logo" class="school-logo" />
       <span>OAU Lost & Found</span>
     </div>
+
+    <!-- Header Search Bar -->
+    <div class="header-search">
+      <input type="text" id="search-input" placeholder="🔍 Search missing or found items..." />
+    </div>
+
     <div class="nav-right">
+      <a href="index.html" class="nav-link active">Home (Feed)</a>
+      <a href="report.html" class="action-btn">➕ Report Hub</a>
+
+      <button onclick="checkAdminAccess()" class="admin-btn">🔑 Admin</button>
       <span id="user-display"></span>
       <button id="logoutBtn" class="logout-btn">Logout</button>
     </div>
-  </nav>
+  </header>
 
   <main class="main-container">
     
-    <!-- Report Missing Item Section -->
-    <section class="card-section" id="report-lost-section">
-      <h2>Report a Missing Item</h2>
-      <form id="report-lost-form">
-        <label for="lost-title"><strong>Item Title:</strong></label>
-        <input type="text" id="lost-title" placeholder="e.g., Black Leather Wallet" required />
-
-        <label for="lost-desc"><strong>Description & Last Seen Location:</strong></label>
-        <textarea id="lost-desc" placeholder="Provide details like brand, color, or where you lost it..." required></textarea>
-
-        <button type="submit" class="warning-btn">Post Missing Item</button>
-      </form>
-    </section>
-
-    <!-- Report Found Item Section -->
-    <section class="card-section" id="report-found-section">
-      <h2>Report a Found Item</h2>
-      <form id="report-found-form">
-        <label for="found-title"><strong>Item Title:</strong></label>
-        <input type="text" id="found-title" placeholder="e.g., Student ID Card" required />
-
-        <label for="found-desc"><strong>Description & Pickup Point:</strong></label>
-        <textarea id="found-desc" placeholder="Where did you find it? Where can the owner collect it?" required></textarea>
-
-        <label for="found-img"><strong>Upload Photo:</strong></label>
-        <input type="file" id="found-img" accept="image/*" required />
-        <div id="imagePreviewContainer" style="display:none; margin-top: 10px;">
-          <img id="imagePreview" src="" alt="Preview" style="max-width: 100%; height: auto; border-radius: 8px;" />
-        </div>
-
-        <button type="submit" class="success-btn">Post Found Item</button>
-      </form>
-    </section>
-
-    <!-- FYP Feed & Search/Filter Section -->
+    <!-- Campus Feed Section -->
     <section class="card-section" id="fyp-section">
-      <h2>Campus Feed (FYP)</h2>
-      
-      <!-- Search & Filter Controls -->
-      <div class="filter-container">
-        <input type="text" id="search-input" placeholder="🔍 Search items (e.g., Keys, ID, Wallet)..." />
-        <select id="category-filter">
-          <option value="all">All Posts</option>
-          <option value="missing">Missing Items Only</option>
-          <option value="found">Found Items Only</option>
-        </select>
+      <div class="feed-header-controls">
+        <h2>Campus Feed (FYP)</h2>
+        
+        <!-- Filter Controls -->
+        <div class="filter-container">
+          <select id="category-filter">
+            <option value="all">All Items</option>
+            <option value="missing">Missing Items Only</option>
+            <option value="found">Found Items Only</option>
+          </select>
+        </div>
       </div>
 
       <div class="feed-container">
-        <!-- Dynamic posts load here -->
+        <!-- Dynamic posts load here via Firebase -->
       </div>
     </section>
 
