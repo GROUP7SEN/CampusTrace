@@ -56,80 +56,210 @@
     <!-- Admin Content Section (Hidden until PIN is authenticated) -->
     <div id="admin-content-section" style="display: none;">
       
-      <!-- Stats Overview -->
-      <div class="dash-stats">
-        <div class="stat-card">
-          <span class="stat-label">Total Portal Listings</span>
-          <span class="stat-value" id="admin-stat-total">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Active Missing</span>
-          <span class="stat-value" id="admin-stat-missing">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Active Found</span>
-          <span class="stat-value" id="admin-stat-found">0</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Reconnected Items</span>
-          <span class="stat-value" id="admin-stat-resolved">0</span>
-        </div>
+      <!-- Admin View Tabs -->
+      <div class="dash-tabs">
+        <button class="tab-btn active" id="admin-tab-listings" onclick="switchAdminTab('listings')">📌 Portal Listings</button>
+        <button class="tab-btn" id="admin-tab-users" onclick="switchAdminTab('users')">👥 User Accounts Management</button>
       </div>
 
-      <!-- Controls & Filter Bar -->
-      <section class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-          <div>
-            <h2>Moderation & Listing Management</h2>
-            <p class="subtitle" style="margin-bottom: 0;">Monitor, resolve, or permanently delete portal reports.</p>
+      <!-- Section 1: Listings Moderation -->
+      <div id="admin-listings-section">
+        <!-- Stats Overview -->
+        <div class="dash-stats">
+          <div class="stat-card">
+            <span class="stat-label">Total Portal Listings</span>
+            <span class="stat-value" id="admin-stat-total">0</span>
           </div>
-          <button onclick="fetchAdminData()" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem;">🔄 Refresh Table</button>
+          <div class="stat-card">
+            <span class="stat-label">Active Missing</span>
+            <span class="stat-value" id="admin-stat-missing">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active Found</span>
+            <span class="stat-value" id="admin-stat-found">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Reconnected Items</span>
+            <span class="stat-value" id="admin-stat-resolved">0</span>
+          </div>
         </div>
 
-        <div class="filter-bar">
-          <input type="text" id="admin-search" placeholder="🔍 Search by keyword, title, or poster..." />
-          <select id="admin-category-filter">
-            <option value="all">All Categories</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Student ID & Cards">Student ID & Cards</option>
-            <option value="Keys & Wallets">Keys & Wallets</option>
-            <option value="Bags & Backpacks">Bags & Backpacks</option>
-            <option value="Documents & Books">Documents & Books</option>
-            <option value="Clothing & Accessories">Clothing & Accessories</option>
-            <option value="Others">Others</option>
-          </select>
-          <select id="admin-status-filter">
-            <option value="all">All Status</option>
-            <option value="missing">Missing Items</option>
-            <option value="found">Found Items</option>
-            <option value="resolved">Resolved Items</option>
-          </select>
+        <!-- Controls & Filter Bar -->
+        <section class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h2>Moderation & Listing Management</h2>
+              <p class="subtitle" style="margin-bottom: 0;">Monitor, resolve, or permanently delete portal reports.</p>
+            </div>
+            <button onclick="fetchAdminData()" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem;">🔄 Refresh Table</button>
+          </div>
+
+          <div class="filter-bar">
+            <input type="text" id="admin-search" placeholder="🔍 Search by keyword, title, or poster..." />
+            <select id="admin-category-filter">
+              <option value="all">All Categories</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Student ID & Cards">Student ID & Cards</option>
+              <option value="Keys & Wallets">Keys & Wallets</option>
+              <option value="Bags & Backpacks">Bags & Backpacks</option>
+              <option value="Documents & Books">Documents & Books</option>
+              <option value="Clothing & Accessories">Clothing & Accessories</option>
+              <option value="Others">Others</option>
+            </select>
+            <select id="admin-status-filter">
+              <option value="all">All Status</option>
+              <option value="missing">Missing Items</option>
+              <option value="found">Found Items</option>
+              <option value="resolved">Resolved Items</option>
+            </select>
+          </div>
+
+          <!-- Moderation Data Table -->
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Item Details</th>
+                  <th>Category</th>
+                  <th>Posted By</th>
+                  <th>Photo</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Admin Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body">
+                <!-- Admin table rows load dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Section 2: User Account Management -->
+      <div id="admin-users-section" style="display: none;">
+        <!-- User Stats Overview -->
+        <div class="dash-stats">
+          <div class="stat-card">
+            <span class="stat-label">Total Registered Users</span>
+            <span class="stat-value" id="admin-user-stat-total">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active Student Accounts</span>
+            <span class="stat-value" id="admin-user-stat-active">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Suspended Accounts</span>
+            <span class="stat-value" id="admin-user-stat-suspended">0</span>
+          </div>
         </div>
 
-        <!-- Moderation Data Table -->
-        <div class="admin-table-wrapper">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Item Details</th>
-                <th>Category</th>
-                <th>Posted By</th>
-                <th>Photo</th>
-                <th>Status</th>
-                <th style="text-align: right;">Admin Actions</th>
-              </tr>
-            </thead>
-            <tbody id="admin-table-body">
-              <!-- Admin table rows load dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </section>
+        <!-- User Controls & Filter Bar -->
+        <section class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h2>User Accounts & Permissions</h2>
+              <p class="subtitle" style="margin-bottom: 0;">View, edit, suspend, reset passwords, or register new user accounts.</p>
+            </div>
+            <button onclick="openAddUserModal()" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem;">+ Add New User</button>
+          </div>
+
+          <div class="filter-bar">
+            <input type="text" id="admin-user-search" placeholder="🔍 Search name, email, matric, or WhatsApp..." />
+            <select id="admin-user-status-filter">
+              <option value="all">All User Status</option>
+              <option value="active">Active Accounts</option>
+              <option value="suspended">Suspended Accounts</option>
+            </select>
+          </div>
+
+          <!-- User Management Data Table -->
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Student Profile</th>
+                  <th>Matriculation No.</th>
+                  <th>School Email</th>
+                  <th>WhatsApp</th>
+                  <th>Contact Pref</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Admin Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table-body">
+                <!-- User rows load dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
 
     </div>
 
   </main>
+
+  <!-- Add/Edit User Admin Modal Overlay -->
+  <div class="modal-overlay" id="admin-user-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="admin-user-modal-title">Add Student User Account</h2>
+        <button class="modal-close" onclick="closeModal('admin-user-modal')">&times;</button>
+      </div>
+      <p class="subtitle" id="admin-user-modal-sub">Create or modify student user profile details.</p>
+
+      <form id="admin-user-form">
+        <input type="hidden" id="admin-user-edit-mode" value="create" />
+        
+        <div class="form-group">
+          <label for="adm-u-name">Full Name</label>
+          <input type="text" id="adm-u-name" placeholder="e.g. OAU Student" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-matric">Matriculation Number</label>
+          <input type="text" id="adm-u-matric" placeholder="e.g. SEN/2021/001" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-email">School Email</label>
+          <input type="email" id="adm-u-email" placeholder="e.g. student@student.oau.edu.ng" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-whatsapp">WhatsApp Number</label>
+          <input type="tel" id="adm-u-whatsapp" placeholder="e.g. 08123456789" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-contact-pref">Contact Preference</label>
+          <select id="adm-u-contact-pref">
+            <option value="both">WhatsApp & Email</option>
+            <option value="whatsapp">WhatsApp Only</option>
+            <option value="email">Email Only</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-password">Password <span style="font-weight:400; color:var(--text-muted); font-size:0.75rem;">(Min. 4 characters)</span></label>
+          <input type="password" id="adm-u-password" placeholder="Account password" />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-status">Account Status</label>
+          <select id="adm-u-status">
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Save User Account</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('admin-user-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer class="footer">
@@ -170,9 +300,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
   <!-- App Script -->
-  <script src="script.js"></script>
-
-  <!-- Admin Logic Script -->
+  <script s"  <!-- Admin Logic Script -->
   <script>
     const ADMIN_PIN = '7024';
 
@@ -204,6 +332,7 @@
         contentSec.style.display = 'block';
         logoutBtn.style.display = 'inline-flex';
         fetchAdminData();
+        fetchAdminUserData();
       } else {
         lockSec.style.display = 'block';
         contentSec.style.display = 'none';
@@ -218,9 +347,30 @@
       checkAdminAuth();
     });
 
+    // Admin Tab Switcher
+    window.switchAdminTab = function(tab) {
+      const listingsSec = document.getElementById('admin-listings-section');
+      const usersSec = document.getElementById('admin-users-section');
+      const btnListings = document.getElementById('admin-tab-listings');
+      const btnUsers = document.getElementById('admin-tab-users');
+
+      if (tab === 'listings') {
+        listingsSec.style.display = 'block';
+        usersSec.style.display = 'none';
+        btnListings.classList.add('active');
+        btnUsers.classList.remove('active');
+      } else {
+        listingsSec.style.display = 'none';
+        usersSec.style.display = 'block';
+        btnListings.classList.remove('active');
+        btnUsers.classList.add('active');
+        renderAdminUsersTable();
+      }
+    };
+
     let adminPostsCache = [];
 
-    // Real-Time Listener for Admin Data
+    // Real-Time Listener for Admin Data (Portal Listings)
     function fetchAdminData() {
       db.collection('portal_items').onSnapshot(snapshot => {
         adminPostsCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -244,7 +394,7 @@
       document.getElementById('admin-stat-resolved').textContent = resolved;
     }
 
-    // Render Admin Management Table
+    // Render Admin Management Table (Listings)
     function renderAdminTable() {
       const tbody = document.getElementById('admin-table-body');
       const searchQuery = (document.getElementById('admin-search').value || '').toLowerCase();
@@ -282,10 +432,6 @@
       }
 
       tbody.innerHTML = filtered.map(post => {
-        const dateStr = post.createdAt?.toDate 
-          ? post.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) 
-          : 'Recently';
-
         return `
           <tr>
             <td>
@@ -337,10 +483,292 @@
       }
     };
 
-    // Filter listeners
+    // ─────────────────────────────────────────
+    // USER MANAGEMENT LOGIC
+    // ─────────────────────────────────────────
+    let adminUsersCache = [];
+
+    // Real-Time & LocalStorage Sync for Users
+    function fetchAdminUserData() {
+      if (typeof db !== 'undefined') {
+        db.collection('users').onSnapshot(snapshot => {
+          const firestoreUsers = snapshot.docs.map(doc => ({ email: doc.id, ...doc.data() }));
+          mergeUserSources(firestoreUsers);
+        }, err => {
+          console.warn('Firestore users fallback:', err);
+          mergeUserSources([]);
+        });
+      } else {
+        mergeUserSources([]);
+      }
+    }
+
+    function mergeUserSources(firestoreUsers) {
+      const localUsers = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      const userMap = new Map();
+
+      // Add local users first
+      localUsers.forEach(u => {
+        const em = (u.email || '').toLowerCase();
+        if (em) {
+          userMap.set(em, {
+            name: u.name || 'Student User',
+            matric: u.matric || 'N/A',
+            email: em,
+            whatsapp: u.whatsapp || 'N/A',
+            contactPref: u.contactPref || 'both',
+            status: u.status || 'active',
+            role: u.role || 'student',
+            password: u.password || ''
+          });
+        }
+      });
+
+      // Override/Merge with Firestore users
+      firestoreUsers.forEach(u => {
+        const em = (u.email || '').toLowerCase();
+        if (em) {
+          const existing = userMap.get(em) || {};
+          userMap.set(em, {
+            name: u.name || existing.name || 'Student User',
+            matric: u.matric || existing.matric || 'N/A',
+            email: em,
+            whatsapp: u.whatsapp || existing.whatsapp || 'N/A',
+            contactPref: u.contactPref || existing.contactPref || 'both',
+            status: u.status || existing.status || 'active',
+            role: u.role || existing.role || 'student',
+            password: existing.password || u.password || ''
+          });
+        }
+      });
+
+      adminUsersCache = Array.from(userMap.values());
+      renderAdminUsersStats();
+      renderAdminUsersTable();
+    }
+
+    function renderAdminUsersStats() {
+      const total = adminUsersCache.length;
+      const active = adminUsersCache.filter(u => u.status !== 'suspended').length;
+      const suspended = adminUsersCache.filter(u => u.status === 'suspended').length;
+
+      document.getElementById('admin-user-stat-total').textContent = total;
+      document.getElementById('admin-user-stat-active').textContent = active;
+      document.getElementById('admin-user-stat-suspended').textContent = suspended;
+    }
+
+    function renderAdminUsersTable() {
+      const tbody = document.getElementById('admin-users-table-body');
+      const query = (document.getElementById('admin-user-search')?.value || '').toLowerCase();
+      const statusFilter = document.getElementById('admin-user-status-filter')?.value || 'all';
+
+      if (!tbody) return;
+
+      const filtered = adminUsersCache.filter(u => {
+        const nameMatch = (u.name || '').toLowerCase().includes(query);
+        const emailMatch = (u.email || '').toLowerCase().includes(query);
+        const matricMatch = (u.matric || '').toLowerCase().includes(query);
+        const waMatch = (u.whatsapp || '').toLowerCase().includes(query);
+        const matchesQuery = nameMatch || emailMatch || matricMatch || waMatch;
+
+        let matchesStatus = true;
+        if (statusFilter === 'active') matchesStatus = u.status !== 'suspended';
+        else if (statusFilter === 'suspended') matchesStatus = u.status === 'suspended';
+
+        return matchesQuery && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+              No registered user accounts found matching criteria.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isSuspended = u.status === 'suspended';
+        return `
+          <tr>
+            <td>
+              <strong>${u.name}</strong>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${u.role === 'admin' ? '👑 Administrator' : '🎓 Student'}</div>
+            </td>
+            <td><code style="background:var(--surface-3); padding:2px 6px; border-radius:4px; font-size:0.8rem;">${u.matric}</code></td>
+            <td><a href="mailto:${u.email}" style="color:var(--text); text-decoration:underline;">${u.email}</a></td>
+            <td>${u.whatsapp && u.whatsapp !== 'N/A' ? `<a href="https://wa.me/${u.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" style="color:#4ade80;">💬 ${u.whatsapp}</a>` : '<span style="color:var(--text-muted);">None</span>'}</td>
+            <td><span class="badge badge-cat">${(u.contactPref || 'both').toUpperCase()}</span></td>
+            <td>
+              ${isSuspended 
+                ? '<span class="badge badge-missing" style="color:#f87171; border-color:rgba(248,113,113,0.4);">🚫 Suspended</span>' 
+                : '<span class="badge badge-found" style="color:#4ade80; border-color:rgba(74,222,128,0.4);">✅ Active</span>'}
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
+                <button onclick="openEditUserModal('${u.email}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">✏️ Edit</button>
+                <button onclick="toggleUserStatus('${u.email}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem; color:${isSuspended ? '#4ade80' : '#fbbf24'} !important;">
+                  ${isSuspended ? '✅ Activate' : '🔒 Suspend'}
+                </button>
+                <button onclick="resetUserPassword('${u.email}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">🔑 Pwd</button>
+                <button onclick="deleteUserAccount('${u.email}')" class="btn btn-danger-soft" style="padding: 4px 8px; font-size: 0.75rem;">🗑️ Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Modal Control Functions for Admin User Management
+    window.openAddUserModal = function() {
+      document.getElementById('admin-user-modal-title').textContent = 'Add Student User Account';
+      document.getElementById('admin-user-modal-sub').textContent = 'Register a new student user account on CampusTrace.';
+      document.getElementById('admin-user-edit-mode').value = 'create';
+      document.getElementById('adm-u-name').value = '';
+      document.getElementById('adm-u-matric').value = '';
+      document.getElementById('adm-u-email').value = '';
+      document.getElementById('adm-u-email').disabled = false;
+      document.getElementById('adm-u-whatsapp').value = '';
+      document.getElementById('adm-u-contact-pref').value = 'both';
+      document.getElementById('adm-u-password').value = '';
+      document.getElementById('adm-u-password').required = true;
+      document.getElementById('adm-u-status').value = 'active';
+      openModal('admin-user-modal');
+    };
+
+    window.openEditUserModal = function(email) {
+      const user = adminUsersCache.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (!user) return showToast('User account not found.', 'error');
+
+      document.getElementById('admin-user-modal-title').textContent = 'Edit Student User Account';
+      document.getElementById('admin-user-modal-sub').textContent = `Modify details for ${user.name} (${user.email}).`;
+      document.getElementById('admin-user-edit-mode').value = 'edit';
+      document.getElementById('adm-u-name').value = user.name || '';
+      document.getElementById('adm-u-matric').value = user.matric || '';
+      document.getElementById('adm-u-email').value = user.email || '';
+      document.getElementById('adm-u-email').disabled = true;
+      document.getElementById('adm-u-whatsapp').value = user.whatsapp || '';
+      document.getElementById('adm-u-contact-pref').value = user.contactPref || 'both';
+      document.getElementById('adm-u-password').value = '';
+      document.getElementById('adm-u-password').required = false;
+      document.getElementById('adm-u-status').value = user.status || 'active';
+      openModal('admin-user-modal');
+    };
+
+    // Save/Update User Form Handler
+    document.getElementById('admin-user-form')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const mode = document.getElementById('admin-user-edit-mode').value;
+      const name = document.getElementById('adm-u-name').value.trim();
+      const matric = document.getElementById('adm-u-matric').value.trim();
+      const email = document.getElementById('adm-u-email').value.trim().toLowerCase();
+      const whatsapp = document.getElementById('adm-u-whatsapp').value.trim();
+      const contactPref = document.getElementById('adm-u-contact-pref').value;
+      const password = document.getElementById('adm-u-password').value.trim();
+      const status = document.getElementById('adm-u-status').value;
+
+      if (name.length < 3) return showToast('Name must be at least 3 characters.', 'warning');
+      if (whatsapp.length < 10) return showToast('Enter a valid WhatsApp number.', 'warning');
+
+      const userData = { name, matric, email, whatsapp, contactPref, status, role: 'student' };
+      if (password && password.length >= 4) userData.password = password;
+
+      // Update LocalStorage registeredAccounts
+      const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      const index = registeredAccounts.findIndex(u => u.email.toLowerCase() === email);
+      if (index >= 0) {
+        registeredAccounts[index] = { ...registeredAccounts[index], ...userData };
+      } else {
+        registeredAccounts.push(userData);
+      }
+      localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+
+      // Update Firestore users collection
+      if (typeof db !== 'undefined') {
+        db.collection('users').doc(email).set(userData, { merge: true })
+          .then(() => showToast(`User account ${mode === 'create' ? 'created' : 'updated'} successfully!`, 'success'))
+          .catch(err => console.warn('Firestore update fallback:', err));
+      } else {
+        showToast(`User account ${mode === 'create' ? 'created' : 'updated'} locally!`, 'success');
+      }
+
+      closeModal('admin-user-modal');
+      fetchAdminUserData();
+    });
+
+    // Toggle Suspend/Activate User Account
+    window.toggleUserStatus = function(email) {
+      const user = adminUsersCache.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (!user) return;
+
+      const newStatus = user.status === 'suspended' ? 'active' : 'suspended';
+      const actionMsg = newStatus === 'suspended' ? 'suspended' : 'activated';
+
+      if (confirm(`Are you sure you want to change ${user.name}'s account status to ${newStatus.toUpperCase()}?`)) {
+        // Update LocalStorage
+        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+        const index = registeredAccounts.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+        if (index >= 0) {
+          registeredAccounts[index].status = newStatus;
+          localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+        }
+
+        // Update Firestore
+        if (typeof db !== 'undefined') {
+          db.collection('users').doc(email.toLowerCase()).update({ status: newStatus })
+            .then(() => showToast(`Account ${user.email} has been ${actionMsg}.`, 'info'))
+            .catch(err => console.warn(err));
+        }
+        fetchAdminUserData();
+      }
+    };
+
+    // Reset User Password Handler
+    window.resetUserPassword = function(email) {
+      const newPwd = prompt(`Enter new password for account (${email}):`);
+      if (newPwd === null) return;
+      if (newPwd.trim().length < 4) return showToast('Password must be at least 4 characters long.', 'warning');
+
+      const pwd = newPwd.trim();
+      const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      const index = registeredAccounts.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+      if (index >= 0) {
+        registeredAccounts[index].password = pwd;
+        localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+      }
+
+      if (typeof db !== 'undefined') {
+        db.collection('users').doc(email.toLowerCase()).update({ password: pwd })
+          .then(() => showToast(`Password for ${email} reset successfully!`, 'success'))
+          .catch(err => console.warn(err));
+      }
+    };
+
+    // Delete User Account Handler
+    window.deleteUserAccount = function(email) {
+      if (confirm(`Permanently delete account for ${email}? This will remove their user credentials.`)) {
+        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+        const updatedAccounts = registeredAccounts.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+        localStorage.setItem('registeredAccounts', JSON.stringify(updatedAccounts));
+
+        if (typeof db !== 'undefined') {
+          db.collection('users').doc(email.toLowerCase()).delete()
+            .then(() => showToast(`Account ${email} deleted permanently.`, 'info'))
+            .catch(err => console.warn(err));
+        }
+        fetchAdminUserData();
+      }
+    };
+
+    // Admin Filter Listeners
     document.getElementById('admin-search')?.addEventListener('input', renderAdminTable);
     document.getElementById('admin-category-filter')?.addEventListener('change', renderAdminTable);
     document.getElementById('admin-status-filter')?.addEventListener('change', renderAdminTable);
+
+    document.getElementById('admin-user-search')?.addEventListener('input', renderAdminUsersTable);
+    document.getElementById('admin-user-status-filter')?.addEventListener('change', renderAdminUsersTable);
 
     // Initialize check on page load
     document.addEventListener('DOMContentLoaded', checkAdminAuth);

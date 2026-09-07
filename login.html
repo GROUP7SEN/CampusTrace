@@ -112,6 +112,8 @@
         localStorage.setItem('userName', foundAccount.name);
         localStorage.setItem('userMatric', foundAccount.matric);
         localStorage.setItem('userEmail', foundAccount.email);
+        localStorage.setItem('userWhatsapp', foundAccount.whatsapp || '');
+        localStorage.setItem('userContactPref', foundAccount.contactPref || 'both');
       } else {
         return showToast('No account found with that email or matric number. Please register first.', 'warning');
       }

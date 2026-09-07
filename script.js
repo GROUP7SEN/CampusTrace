@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
 const currentUserName = localStorage.getItem('userName') || '';
 const currentUserEmail = localStorage.getItem('userEmail') || '';
 const currentUserMatric = localStorage.getItem('userMatric') || '';
+const currentUserWhatsapp = localStorage.getItem('userWhatsapp') || '';
+const currentUserContactPref = localStorage.getItem('userContactPref') || 'both';
 
 if (!currentUserEmail && window.location.pathname.includes('dashboard.html')) {
   // Show brief message before redirect
@@ -37,7 +39,7 @@ if (!currentUserEmail && window.location.pathname.includes('dashboard.html')) {
 
 const userDisplay = document.getElementById('user-display');
 if (userDisplay && currentUserName) {
-  userDisplay.textContent = `${currentUserName} (${currentUserMatric})`;
+  userDisplay.textContent = `👤 ${currentUserName} (${currentUserMatric})`;
 }
 
 // Helpers & Toast Notifications
@@ -211,6 +213,14 @@ function renderFeed() {
     const isOwner = post.email === currentUserEmail;
     const dateFormatted = post.createdAt?.toDate ? post.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently';
 
+    // Poster contact preference logic
+    const posterWhatsapp = post.whatsapp || '';
+    const cleanWa = posterWhatsapp.replace(/[^0-9]/g, '');
+    const allowWa = (post.contactPref === 'both' || post.contactPref === 'whatsapp' || !post.contactPref) && cleanWa.length >= 10;
+    const allowEmail = post.contactPref === 'both' || post.contactPref === 'email' || !post.contactPref || !allowWa;
+
+    const formattedWa = cleanWa.startsWith('0') ? '234' + cleanWa.slice(1) : cleanWa;
+
     return `
       <div class="feed-card ${post.type} ${post.resolved ? 'resolved' : ''}">
         <div class="card-header">
@@ -236,9 +246,18 @@ function renderFeed() {
         </div>
 
         <div class="card-footer">
-          <a href="mailto:${post.email}?subject=Regarding '${post.title}' on CampusTrace" class="btn btn-outline" style="font-size:0.8rem;">
-            ✉️ Contact Poster
-          </a>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            ${allowWa ? `
+              <a href="https://wa.me/${formattedWa}?text=${encodeURIComponent("Hi, I'm contacting you regarding your CampusTrace post: " + post.title)}" target="_blank" class="btn btn-outline" style="font-size:0.8rem; border-color: rgba(74, 222, 128, 0.35); color: #4ade80 !important;">
+                💬 WhatsApp Poster
+              </a>
+            ` : ''}
+            ${allowEmail ? `
+              <a href="mailto:${post.email}?subject=Regarding '${encodeURIComponent(post.title)}' on CampusTrace" class="btn btn-outline" style="font-size:0.8rem;">
+                ✉️ Email Poster
+              </a>
+            ` : ''}
+          </div>
           <div style="display:flex; gap:8px;">
             ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}')" class="btn btn-primary" style="font-size:0.8rem;">Mark Resolved</button>` : ''}
             ${isOwner ? `<button onclick="deletePost('${post.id}')" class="btn btn-danger" style="font-size:0.8rem;">Delete</button>` : ''}
@@ -268,6 +287,8 @@ document.getElementById('report-lost-form')?.addEventListener('submit', function
     desc,
     userName: currentUserName,
     email: currentUserEmail,
+    whatsapp: currentUserWhatsapp,
+    contactPref: currentUserContactPref,
     initials: getInitials(currentUserName),
     resolved: false,
     statusText: 'Missing Item',
@@ -367,6 +388,8 @@ document.getElementById('report-found-form')?.addEventListener('submit', async f
       imageUrl: finalImageUrl,
       userName: currentUserName,
       email: currentUserEmail,
+      whatsapp: currentUserWhatsapp,
+      contactPref: currentUserContactPref,
       initials: getInitials(currentUserName),
       resolved: false,
       statusText: 'Found Item',
@@ -402,6 +425,75 @@ document.getElementById('found-img')?.addEventListener('change', async function 
       console.error('Preview error:', err);
     }
   }
+});
+
+// Settings Modal Handler
+window.openSettingsModal = function() {
+  document.getElementById('set-name').value = localStorage.getItem('userName') || '';
+  document.getElementById('set-email').value = localStorage.getItem('userEmail') || '';
+  document.getElementById('set-whatsapp').value = localStorage.getItem('userWhatsapp') || '';
+  document.getElementById('set-contact-pref').value = localStorage.getItem('userContactPref') || 'both';
+  document.getElementById('set-password').value = '';
+  openModal('settings-modal');
+};
+
+document.getElementById('settings-form')?.addEventListener('submit', function (e) {
+  e.preventDefault();
+  const name = document.getElementById('set-name').value.trim();
+  const whatsapp = document.getElementById('set-whatsapp').value.trim();
+  const contactPref = document.getElementById('set-contact-pref').value;
+  const newPassword = document.getElementById('set-password').value.trim();
+
+  if (name.length < 3) {
+    return showToast('Full name must be at least 3 characters.', 'warning');
+  }
+  if (whatsapp.length < 10) {
+    return showToast('Please enter a valid WhatsApp number.', 'warning');
+  }
+
+  // Update localStorage session
+  localStorage.setItem('userName', name);
+  localStorage.setItem('userWhatsapp', whatsapp);
+  localStorage.setItem('userContactPref', contactPref);
+
+  // Update stored accounts array
+  const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+  const email = currentUserEmail.toLowerCase();
+  const index = registeredAccounts.findIndex(acc => acc.email.toLowerCase() === email);
+
+  if (index >= 0) {
+    registeredAccounts[index].name = name;
+    registeredAccounts[index].whatsapp = whatsapp;
+    registeredAccounts[index].contactPref = contactPref;
+    if (newPassword && newPassword.length >= 4) {
+      registeredAccounts[index].password = newPassword;
+    }
+    localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+  }
+
+  // Update Firestore user document
+  if (typeof db !== 'undefined' && email) {
+    const updatePayload = {
+      name,
+      whatsapp,
+      contactPref,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (newPassword && newPassword.length >= 4) {
+      updatePayload.password = newPassword;
+    }
+    db.collection('users').doc(email).set(updatePayload, { merge: true })
+      .catch(err => console.warn('Firestore user update fallback:', err));
+  }
+
+  // Update display UI
+  const userDisplay = document.getElementById('user-display');
+  if (userDisplay) {
+    userDisplay.textContent = `👤 ${name} (${currentUserMatric})`;
+  }
+
+  showToast('Settings saved successfully!', 'success');
+  closeModal('settings-modal');
 });
 
 // Mark Post as Resolved

@@ -819,6 +819,21 @@ textarea { resize: vertical; min-height: 90px; }
   color: var(--text-faint);
 }
 
+/* ── User Display Chip ── */
+.user-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border-light);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .navbar { padding: 0 20px; flex-wrap: wrap; height: auto; padding: 14px 20px; }
@@ -838,7 +853,7 @@ textarea { resize: vertical; min-height: 90px; }
 
   .nav-links.active { display: flex; }
 
-  .nav-links a, .nav-links .btn {
+  .nav-links a, .nav-links .btn, .nav-links span, .user-display {
     width: 100%;
     text-align: center;
     justify-content: center;
