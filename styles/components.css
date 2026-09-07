@@ -1,0 +1,197 @@
+/* ─────────────────────────────────────────
+   CampusTrace — Reusable Components Stylesheet
+   ───────────────────────────────────────── */
+
+.container-dash {
+  max-width: 960px;
+}
+
+.pwd-hint {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.form-submit-btn {
+  margin-top: 10px;
+}
+
+.text-center-sub {
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+.auth-link {
+  color: var(--accent, #818cf8);
+  font-weight: 600;
+}
+
+.nav-btn-missing {
+  padding: 7px 14px;
+  font-size: 0.825rem;
+}
+
+.nav-btn-found {
+  padding: 7px 14px;
+  font-size: 0.825rem;
+}
+
+.nav-btn-settings {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.nav-btn-logout {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+}
+
+.support-city-text {
+  margin-top: 4px;
+}
+
+.delegated-banner-box {
+  font-size: 0.8rem;
+  color: #818cf8;
+  background: rgba(129, 140, 248, 0.08);
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 10px 0 4px;
+}
+
+.delegated-notes-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.img-preview-container {
+  display: none;
+  margin-top: 10px;
+}
+
+.card-footer-flex {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-contact-wa {
+  font-size: 0.8rem;
+  border-color: rgba(74, 222, 128, 0.35);
+  color: #4ade80 !important;
+}
+
+.btn-contact-email {
+  font-size: 0.8rem;
+}
+
+.btn-mark-resolved {
+  font-size: 0.8rem;
+}
+
+.btn-delete-post {
+  font-size: 0.8rem;
+}
+
+.nav-dash-hidden {
+  display: none;
+}
+
+.how-it-works-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-bottom: 14px;
+}
+
+.form-modal-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-modal-btn {
+  flex: 1;
+}
+
+.set-email-disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: var(--accent, #818cf8);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0 2px;
+  text-decoration: underline;
+}
+
+.lightbox-wrapper {
+  position: relative;
+  max-width: 94vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-close-btn {
+  position: absolute;
+  top: -42px;
+  right: 0;
+  color: #fff;
+  font-size: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.lightbox-img-element {
+  max-width: 92vw;
+  max-height: 86vh;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: #0b0c10;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.9);
+}
+
+.empty-tab-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.post-tags-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.post-img-clickable {
+  cursor: pointer;
+}
+
+.lightbox-overlay-custom {
+  z-index: 999999;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+

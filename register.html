@@ -6,6 +6,7 @@
   <title>Register - CampusTrace</title>
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles/components.css" />
 </head>
 <body>
 
@@ -55,18 +56,18 @@
         </div>
 
         <div class="form-group">
-          <label for="reg-password">Password <span style="font-weight: 400; color: var(--text-muted); font-size: 0.75rem;">(Min. 4 characters)</span></label>
+          <label for="reg-password">Password <span class="pwd-hint">(Min. 4 characters)</span></label>
           <div class="pwd-input-group">
             <input type="password" id="reg-password" placeholder="Create a password (min 4 characters)" minlength="4" required />
             <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('reg-password', this)" title="Toggle password visibility">👁️</button>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Register Account</button>
+        <button type="submit" class="btn btn-primary form-submit-btn">Register Account</button>
       </form>
 
-      <p class="subtitle" style="text-align: center; margin-top: 16px; margin-bottom: 0;">
-        Already have an account? <a href="login.html" style="color: var(--accent); font-weight: 600;">Sign In</a>
+      <p class="subtitle text-center-sub">
+        Already have an account? <a href="login.html" class="auth-link">Sign In</a>
       </p>
     </section>
   </main>
@@ -103,7 +104,7 @@
       <div class="footer-contact">
         <h4>Campus Support</h4>
         <p>Obafemi Awolowo University, Ile-Ife</p>
-        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+        <p class="support-city-text">Osun State, Nigeria</p>
       </div>
     </div>
 

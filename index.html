@@ -6,6 +6,7 @@
   <title>CampusTrace - OAU Lost & Found Portal</title>
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles/components.css" />
 </head>
 <body>
 
@@ -24,7 +25,7 @@
       <a href="about.html">About</a>
       <a href="login.html" class="btn btn-outline" id="nav-login">Login</a>
       <a href="register.html" class="btn btn-primary" id="nav-register">Register</a>
-      <a href="dashboard.html" class="btn btn-primary" id="nav-dash" style="display: none;">Dashboard</a>
+      <a href="dashboard.html" class="btn btn-primary nav-dash-hidden" id="nav-dash">Dashboard</a>
     </div>
   </nav>
 
@@ -40,7 +41,7 @@
 
   <!-- Quick Feature Breakdown -->
   <main class="container">
-    <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 14px;">How it works</p>
+    <p class="how-it-works-label">How it works</p>
     <div class="how-grid">
       <div class="how-item">
         <div class="how-icon">📢</div>
@@ -92,7 +93,7 @@
       <div class="footer-contact">
         <h4>Campus Support</h4>
         <p>Obafemi Awolowo University, Ile-Ife</p>
-        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+        <p class="support-city-text">Osun State, Nigeria</p>
       </div>
     </div>
 

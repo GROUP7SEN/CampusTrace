@@ -1,0 +1,174 @@
+/* ─────────────────────────────────────────
+   CampusTrace — About Page Modular Stylesheet
+   ───────────────────────────────────────── */
+
+.about-hero {
+  padding: 50px 20px 36px;
+  text-align: center;
+}
+
+.about-hero h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.about-hero p {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.about-container {
+  max-width: 900px;
+  padding-bottom: 60px;
+}
+
+.about-card {
+  margin-bottom: 24px;
+}
+
+.about-text {
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+
+.about-text:last-child {
+  margin-bottom: 0;
+}
+
+.about-link {
+  color: var(--accent, #818cf8);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.about-link-assistant {
+  color: #818cf8;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Team Section */
+.team-buttons-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.team-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.team-card-lead {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.team-card-assistant {
+  background: rgba(129, 140, 248, 0.08);
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.team-role-label {
+  font-size: 0.725rem;
+  color: #818cf8;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.team-role-label-assistant {
+  font-size: 0.725rem;
+  color: #a5b4fc;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.team-member-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--white);
+}
+
+.team-member-link {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.team-member-github {
+  font-size: 0.75rem;
+  color: var(--accent, #818cf8);
+}
+
+/* Features Breakdown Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.feature-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 18px;
+  border-radius: var(--radius);
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.feature-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.feature-card p {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Tech Stack Breakdown */
+.tech-stack-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.tech-column {
+  flex: 1;
+  min-width: 240px;
+}
+
+.tech-column h4 {
+  color: var(--white);
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.tech-column p {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

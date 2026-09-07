@@ -6,6 +6,7 @@
   <title>Dashboard - CampusTrace</title>
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles/components.css" />
 </head>
 <body>
 
@@ -23,15 +24,15 @@
     <div class="nav-links" id="nav-menu">
       <a href="index.html">Home</a>
       <a href="about.html">About</a>
-      <button onclick="openModal('lost-modal')" class="btn btn-warning" style="padding: 7px 14px; font-size: 0.825rem;">Report Missing</button>
-      <button onclick="openModal('found-modal')" class="btn btn-success" style="padding: 7px 14px; font-size: 0.825rem;">Report Found</button>
-      <button onclick="openSettingsModal()" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">⚙️ Settings</button>
+      <button onclick="openModal('lost-modal')" class="btn btn-warning nav-btn-missing">Report Missing</button>
+      <button onclick="openModal('found-modal')" class="btn btn-success nav-btn-found">Report Found</button>
+      <button onclick="openSettingsModal()" class="btn btn-outline nav-btn-settings">⚙️ Settings</button>
       <span id="user-display" class="user-display"></span>
-      <button id="logoutBtn" class="btn btn-danger" style="padding: 6px 14px; font-size: 0.8rem;">Logout</button>
+      <button id="logoutBtn" class="btn btn-danger nav-btn-logout">Logout</button>
     </div>
   </nav>
 
-  <main class="container" style="max-width: 960px;">
+  <main class="container container-dash">
     
     <!-- Portal Overview Stats -->
     <div class="dash-stats">
@@ -126,8 +127,8 @@
           <textarea id="lost-desc" rows="3" placeholder="Provide distinct features, color, brand, or location last seen (e.g., Natural Science Lecture Theatre)..." required></textarea>
         </div>
 
-        <div style="display: flex; gap: 12px; margin-top: 8px;">
-          <button type="submit" class="btn btn-warning" style="flex: 1;">Publish Missing Report</button>
+        <div class="form-modal-row">
+          <button type="submit" class="btn btn-warning form-modal-btn">Publish Missing Report</button>
           <button type="button" class="btn btn-outline" onclick="closeModal('lost-modal')">Cancel</button>
         </div>
       </form>
@@ -170,13 +171,13 @@
         <div class="form-group">
           <label for="found-img">Upload Photo of Item</label>
           <input type="file" id="found-img" accept="image/*" required />
-          <div id="imagePreviewContainer" style="display: none; margin-top: 10px;">
+          <div id="imagePreviewContainer" class="img-preview-container">
             <img id="imagePreview" src="" alt="Preview" class="post-img" />
           </div>
         </div>
 
-        <div style="display: flex; gap: 12px; margin-top: 8px;">
-          <button type="submit" class="btn btn-success" id="submit-found-btn" style="flex: 1;">Publish Found Item</button>
+        <div class="form-modal-row">
+          <button type="submit" class="btn btn-success form-modal-btn" id="submit-found-btn">Publish Found Item</button>
           <button type="button" class="btn btn-outline" onclick="closeModal('found-modal')">Cancel</button>
         </div>
       </form>
@@ -200,7 +201,7 @@
 
         <div class="form-group">
           <label for="set-email">Email Address</label>
-          <input type="email" id="set-email" disabled style="opacity: 0.7; cursor: not-allowed;" />
+          <input type="email" id="set-email" disabled class="set-email-disabled" />
         </div>
 
         <div class="form-group">
@@ -218,15 +219,15 @@
         </div>
 
         <div class="form-group">
-          <label for="set-password">New Password <span style="font-weight:400; color:var(--text-muted); font-size:0.75rem;">(Leave blank to keep current)</span></label>
+          <label for="set-password">New Password <span class="pwd-hint">(Leave blank to keep current)</span></label>
           <div class="pwd-input-group">
             <input type="password" id="set-password" placeholder="Enter new password (optional)" minlength="4" />
             <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('set-password', this)" title="Toggle password visibility">👁️</button>
           </div>
         </div>
 
-        <div style="display: flex; gap: 12px; margin-top: 8px;">
-          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Settings</button>
+        <div class="form-modal-row">
+          <button type="submit" class="btn btn-primary form-modal-btn">Save Settings</button>
           <button type="button" class="btn btn-outline" onclick="closeModal('settings-modal')">Cancel</button>
         </div>
       </form>
@@ -265,7 +266,7 @@
       <div class="footer-contact">
         <h4>Campus Support</h4>
         <p>Obafemi Awolowo University, Ile-Ife</p>
-        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+        <p class="support-city-text">Osun State, Nigeria</p>
       </div>
     </div>
 

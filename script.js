@@ -43,6 +43,18 @@ window.toggleReadMore = function(btn) {
   }
 };
 
+// Helper: Format WhatsApp phone numbers to valid international format (234...)
+function formatWhatsappNumber(rawWa) {
+  if (!rawWa) return '';
+  let clean = rawWa.replace(/[^0-9]/g, '');
+  if (clean.startsWith('0') && clean.length === 11) {
+    clean = '234' + clean.slice(1);
+  } else if (clean.length === 10 && (clean.startsWith('7') || clean.startsWith('8') || clean.startsWith('9'))) {
+    clean = '234' + clean;
+  }
+  return clean;
+}
+
 function formatDescWithReadMore(text, limit = 90) {
   if (!text) return '';
   if (text.length <= limit) return text;
@@ -50,8 +62,8 @@ function formatDescWithReadMore(text, limit = 90) {
   return `
     <span class="read-more-wrapper">
       <span class="text-preview">${truncated}...</span>
-      <span class="text-full" style="display:none;">${text}</span>
-      <button type="button" onclick="toggleReadMore(this)" style="background:none; border:none; color:#818cf8; cursor:pointer; font-size:0.78rem; font-weight:600; padding:0 2px; text-decoration:underline;">Read More</button>
+      <span class="text-full nav-dash-hidden">${text}</span>
+      <button type="button" onclick="toggleReadMore(this)" class="read-more-btn">Read More</button>
     </span>
   `;
 }
@@ -63,17 +75,11 @@ window.openImageLightbox = function(src) {
   if (!lightbox) {
     lightbox = document.createElement('div');
     lightbox.id = 'image-lightbox-modal';
-    lightbox.className = 'modal-overlay';
-    lightbox.style.zIndex = '999999';
-    lightbox.style.background = 'rgba(0, 0, 0, 0.88)';
-    lightbox.style.backdropFilter = 'blur(6px)';
-    lightbox.style.display = 'flex';
-    lightbox.style.alignItems = 'center';
-    lightbox.style.justifyContent = 'center';
+    lightbox.className = 'modal-overlay lightbox-overlay-custom';
     lightbox.innerHTML = `
-      <div style="position: relative; max-width: 94vw; max-height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: center;" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeModal('image-lightbox-modal')" style="position: absolute; top: -42px; right: 0; color: #fff; font-size: 32px; background: none; border: none; cursor: pointer; opacity: 0.9;" title="Close preview">&times;</button>
-        <img id="lightbox-target-img" src="" alt="Full Resolution Preview" style="max-width: 92vw; max-height: 86vh; object-fit: contain; border-radius: 8px; border: 1px solid var(--border-light); background: #0b0c10; box-shadow: 0 16px 48px rgba(0,0,0,0.9);" />
+      <div class="lightbox-wrapper" onclick="event.stopPropagation()">
+        <button class="modal-close lightbox-close-btn" onclick="closeModal('image-lightbox-modal')" title="Close preview">&times;</button>
+        <img id="lightbox-target-img" src="" alt="Full Resolution Preview" class="lightbox-img-element" />
       </div>
     `;
     lightbox.onclick = function() { closeModal('image-lightbox-modal'); };
@@ -363,7 +369,7 @@ function renderFeed() {
     const isMyTab = currentActiveTab === 'my';
     feedContainer.innerHTML = `
       <div class="empty-state">
-        <div style="font-size: 2rem; margin-bottom: 12px;">${isMyTab ? '📋' : '🔍'}</div>
+        <div class="empty-tab-icon">${isMyTab ? '📋' : '🔍'}</div>
         <h3>${isMyTab ? 'No listings yet' : 'No items found'}</h3>
         <p>${isMyTab 
           ? 'You have not posted any missing or found item reports yet. Use the buttons above to submit your first report.' 
@@ -385,13 +391,17 @@ function renderFeed() {
       }
     }
 
-    // Poster contact preference logic
-    const posterWhatsapp = post.whatsapp || '';
-    const cleanWa = posterWhatsapp.replace(/[^0-9]/g, '');
-    const allowWa = (post.contactPref === 'both' || post.contactPref === 'whatsapp' || !post.contactPref) && cleanWa.length >= 10;
-    const allowEmail = post.contactPref === 'both' || post.contactPref === 'email' || !post.contactPref || !allowWa;
+    // Sync poster contact info with latest registered account profile if available
+    const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+    const userAcc = registeredAccounts.find(acc => (acc.email || '').trim().toLowerCase() === (post.email || '').trim().toLowerCase());
 
-    const formattedWa = cleanWa.startsWith('0') ? '234' + cleanWa.slice(1) : cleanWa;
+    const posterWhatsapp = (userAcc && userAcc.whatsapp) ? userAcc.whatsapp : (post.whatsapp || '');
+    const posterEmail = (userAcc && userAcc.email) ? userAcc.email : (post.email || '');
+    const pref = ((userAcc && userAcc.contactPref) ? userAcc.contactPref : (post.contactPref || 'both')).toLowerCase();
+
+    const formattedWa = formatWhatsappNumber(posterWhatsapp);
+    const allowWa = (pref === 'whatsapp' || pref === 'both') && formattedWa.length >= 10;
+    const allowEmail = (pref === 'email' || pref === 'both');
 
     return `
       <div class="feed-card ${post.type} ${post.resolved ? 'resolved' : ''}">
@@ -405,7 +415,7 @@ function renderFeed() {
         </div>
         
         <div class="card-body">
-          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+          <div class="post-tags-wrapper">
             ${post.type === 'missing' 
               ? '<span class="badge badge-missing">📢 Missing</span>' 
               : '<span class="badge badge-found">🔍 Found</span>'}
@@ -415,32 +425,32 @@ function renderFeed() {
           <h3>${post.title}</h3>
           <p>${formatDescWithReadMore(post.desc, 90)}</p>
           ${post.delegatedTo ? `
-            <div style="font-size:0.8rem; color:#818cf8; background:rgba(129,140,248,0.08); border:1px solid rgba(129,140,248,0.25); padding:8px 12px; border-radius:6px; margin: 10px 0 4px;">
+            <div class="delegated-banner-box">
               🛡️ <strong>Delegated Official Unit:</strong> ${post.delegatedTo}
-              ${post.delegatedNotes ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Instructions: ${post.delegatedNotes}</div>` : ''}
+              ${post.delegatedNotes ? `<div class="delegated-notes-sub">Instructions: ${post.delegatedNotes}</div>` : ''}
             </div>
           ` : ''}
-          ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img" alt="${post.title}" onclick="openImageLightbox('${post.imageUrl}')" style="cursor: pointer;" title="Click to view full screen photo" />` : ''}
+          ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img post-img-clickable" alt="${post.title}" onclick="openImageLightbox('${post.imageUrl}')" title="Click to view full screen photo" />` : ''}
         </div>
 
         <div class="card-footer">
           ${(!isOwner && !post.resolved) ? `
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <div class="card-footer-flex">
               ${allowWa ? `
-                <a href="https://wa.me/${formattedWa}?text=${encodeURIComponent("Hi, I'm contacting you regarding your CampusTrace post: " + post.title)}" target="_blank" class="btn btn-outline" style="font-size:0.8rem; border-color: rgba(74, 222, 128, 0.35); color: #4ade80 !important;">
+                <a href="https://wa.me/${formattedWa}?text=${encodeURIComponent("Hi, I'm contacting you regarding your CampusTrace post: " + post.title)}" target="_blank" class="btn btn-outline btn-contact-wa">
                   💬 WhatsApp Poster
                 </a>
               ` : ''}
               ${allowEmail ? `
-                <a href="mailto:${post.email}?subject=Regarding '${encodeURIComponent(post.title)}' on CampusTrace" class="btn btn-outline" style="font-size:0.8rem;">
+                <a href="mailto:${posterEmail}?subject=Regarding '${encodeURIComponent(post.title)}' on CampusTrace" class="btn btn-outline btn-contact-email">
                   ✉️ Email Poster
                 </a>
               ` : ''}
             </div>
           ` : '<div></div>'}
-          <div style="display:flex; gap:8px; align-items: center;">
-            ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}')" class="btn btn-primary" style="font-size:0.8rem;">Mark Resolved</button>` : ''}
-            ${isOwner ? `<button onclick="deletePost('${post.id}')" class="btn btn-danger" style="font-size:0.8rem;">Delete</button>` : ''}
+          <div class="card-footer-flex">
+            ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}')" class="btn btn-primary btn-mark-resolved">Mark Resolved</button>` : ''}
+            ${isOwner ? `<button onclick="deletePost('${post.id}')" class="btn btn-danger btn-delete-post">Delete</button>` : ''}
           </div>
         </div>
       </div>
@@ -683,6 +693,14 @@ document.getElementById('settings-form')?.addEventListener('submit', function (e
     }
     db.collection('users').doc(email).set(updatePayload, { merge: true })
       .catch(err => console.warn('Firestore user update fallback:', err));
+
+    // Sync updated contact info to all posts published by this user in Firestore
+    db.collection('portal_items').where('email', '==', email).get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          doc.ref.update({ whatsapp, contactPref, userName: name });
+        });
+      }).catch(err => console.warn('Sync user posts fallback:', err));
   }
 
   // Update display UI

@@ -6,6 +6,8 @@
   <title>Admin Portal - CampusTrace</title>
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles/admin.css" />
+  <link rel="stylesheet" href="styles/components.css" />
 </head>
 <body>
 
@@ -24,15 +26,15 @@
       <a href="index.html">Main Portal</a>
       <a href="about.html">About</a>
       <a href="dashboard.html">Campus Feed</a>
-      <button id="adminLogoutBtn" class="btn btn-outline" style="display: none; padding: 6px 14px; font-size: 0.8rem;">Lock Admin</button>
+      <button id="adminLogoutBtn" class="btn btn-outline nav-btn-logout nav-dash-hidden">Lock Admin</button>
     </div>
   </nav>
 
-  <main class="container" style="max-width: 960px;">
+  <main class="container container-dash">
 
     <!-- PIN Lock Section (Shown if unauthenticated) -->
-    <section class="card pin-lock-container" id="pin-lock-section">
-      <div style="font-size: 2.5rem; margin-bottom: 8px;">🔒</div>
+    <section class="card pin-lock-card" id="pin-lock-section">
+      <div class="pin-lock-icon">🔒</div>
       <h2>Admin Access Restricted</h2>
       <p class="subtitle">Enter the 4-digit administrator PIN to access management controls.</p>
 
@@ -53,12 +55,12 @@
             <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('pin-input', this)" title="Toggle PIN visibility">👁️</button>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Unlock Admin Dashboard</button>
+        <button type="submit" class="btn btn-primary pin-lock-btn">Unlock Admin Dashboard</button>
       </form>
     </section>
 
     <!-- Admin Content Section (Hidden until PIN is authenticated) -->
-    <div id="admin-content-section" style="display: none;">
+    <div id="admin-content-section" class="nav-dash-hidden">
       
       <!-- Admin View Tabs -->
       <div class="dash-tabs">
@@ -90,12 +92,12 @@
 
         <!-- Controls & Filter Bar -->
         <section class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+          <div class="admin-header-flex">
             <div>
               <h2>Moderation & Listing Management</h2>
-              <p class="subtitle" style="margin-bottom: 0;">Monitor, resolve, or permanently delete portal reports.</p>
+              <p class="subtitle text-margin-zero">Monitor, resolve, or permanently delete portal reports.</p>
             </div>
-            <button onclick="fetchAdminData()" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem;">🔄 Refresh Table</button>
+            <button onclick="fetchAdminData()" class="btn btn-outline nav-btn-settings">🔄 Refresh Table</button>
           </div>
 
           <div class="filter-bar">
@@ -130,7 +132,7 @@
                   <th>Date & Time</th>
                   <th>Photo</th>
                   <th>Status</th>
-                  <th style="text-align: right;">Admin Actions</th>
+                  <th class="text-right">Admin Actions</th>
                 </tr>
               </thead>
               <tbody id="admin-table-body">
@@ -142,7 +144,7 @@
       </div>
 
       <!-- Section 2: User Account Management -->
-      <div id="admin-users-section" style="display: none;">
+      <div id="admin-users-section" class="nav-dash-hidden">
         <!-- User Stats Overview -->
         <div class="dash-stats">
           <div class="stat-card">
@@ -161,10 +163,10 @@
 
         <!-- User Controls & Filter Bar -->
         <section class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+          <div class="admin-header-flex">
             <div>
               <h2>User Accounts & Permissions</h2>
-              <p class="subtitle" style="margin-bottom: 0;">View, suspend/activate, or permanently delete student accounts.</p>
+              <p class="subtitle text-margin-zero">View, suspend/activate, or permanently delete student accounts.</p>
             </div>
           </div>
 
@@ -188,7 +190,7 @@
                   <th>WhatsApp</th>
                   <th>Contact Pref</th>
                   <th>Status</th>
-                  <th style="text-align: right;">Admin Actions</th>
+                  <th class="text-right">Admin Actions</th>
                 </tr>
               </thead>
               <tbody id="admin-users-table-body">
@@ -246,7 +248,7 @@
         </div>
 
         <div class="form-group">
-          <label for="adm-u-password">Password <span style="font-weight:400; color:var(--text-muted); font-size:0.75rem;">(Min. 4 characters)</span></label>
+          <label for="adm-u-password">Password <span class="pwd-hint">(Min. 4 characters)</span></label>
           <div class="pwd-input-group">
             <input type="password" id="adm-u-password" placeholder="Account password" />
             <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('adm-u-password', this)" title="Toggle password visibility">👁️</button>
@@ -261,8 +263,8 @@
           </select>
         </div>
 
-        <div style="display: flex; gap: 12px; margin-top: 8px;">
-          <button type="submit" class="btn btn-primary" style="flex: 1;">Save User Account</button>
+        <div class="form-modal-row">
+          <button type="submit" class="btn btn-primary form-modal-btn">Save User Account</button>
           <button type="button" class="btn btn-outline" onclick="closeModal('admin-user-modal')">Cancel</button>
         </div>
       </form>
@@ -283,7 +285,7 @@
 
         <div class="form-group">
           <label for="del-post-title">Item Report Title</label>
-          <input type="text" id="del-post-title" disabled style="opacity: 0.7; cursor: not-allowed;" />
+          <input type="text" id="del-post-title" disabled class="input-readonly" />
         </div>
 
         <div class="form-group">
@@ -304,8 +306,8 @@
           <textarea id="del-notes" rows="3" placeholder="Provide instructions for the assignee or location details for the student..."></textarea>
         </div>
 
-        <div style="display: flex; gap: 12px; margin-top: 8px;">
-          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Delegation</button>
+        <div class="form-modal-row">
+          <button type="submit" class="btn btn-primary form-modal-btn">Save Delegation</button>
           <button type="button" class="btn btn-outline" onclick="closeModal('admin-delegate-modal')">Cancel</button>
         </div>
       </form>
@@ -344,7 +346,7 @@
       <div class="footer-contact">
         <h4>Campus Support</h4>
         <p>Obafemi Awolowo University, Ile-Ife</p>
-        <p style="margin-top: 4px;">Osun State, Nigeria</p>
+        <p class="support-city-text">Osun State, Nigeria</p>
       </div>
     </div>
 
@@ -484,7 +486,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">
+            <td colspan="8" class="text-center-muted-padding">
               No listings found matching filter criteria.
             </td>
           </tr>
@@ -511,34 +513,34 @@
             </td>
             <td data-label="Item Details">
               <strong>${post.title}</strong>
-              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top:2px;">${typeof formatDescWithReadMore === 'function' ? formatDescWithReadMore(post.desc, 45) : post.desc}</div>
-              ${isDelegated ? `<div style="font-size: 0.75rem; color: #818cf8; margin-top: 4px;">🛡️ <strong>Delegated:</strong> ${post.delegatedTo}</div>` : ''}
+              <div class="table-cell-desc">${typeof formatDescWithReadMore === 'function' ? formatDescWithReadMore(post.desc, 45) : post.desc}</div>
+              ${isDelegated ? `<div class="delegated-notice-text">🛡️ <strong>Delegated:</strong> ${post.delegatedTo}</div>` : ''}
             </td>
             <td data-label="Category"><span class="badge badge-cat">${post.category || 'General'}</span></td>
             <td data-label="Posted By">
               <div>${post.userName || 'Unknown'}</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">${post.email}</div>
+              <div class="table-cell-sub">${post.email}</div>
             </td>
-            <td data-label="Date & Time"><span style="font-size: 0.78rem; color: var(--text-muted); white-space: nowrap;">📅 ${dateFormatted}</span></td>
+            <td data-label="Date & Time"><span class="table-cell-date">📅 ${dateFormatted}</span></td>
             <td data-label="Photo">
               ${post.imageUrl 
-                ? `<img src="${post.imageUrl}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; cursor: pointer;" onclick="openImageLightbox('${post.imageUrl}')" title="Click to view photo in full screen" />` 
-                : '<span style="color: var(--text-muted); font-size: 0.8rem;">No photo</span>'}
+                ? `<img src="${post.imageUrl}" class="table-img-thumb" onclick="openImageLightbox('${post.imageUrl}')" title="Click to view photo in full screen" />` 
+                : '<span class="no-photo-text">No photo</span>'}
             </td>
             <td data-label="Status">
               ${post.resolved 
                 ? '<span class="badge badge-resolved">✅ Resolved</span>' 
                 : isDelegated 
-                  ? '<span class="badge badge-cat" style="color: #818cf8; border-color: rgba(129,140,248,0.3);">🛡️ Delegated</span>' 
-                  : '<span style="font-size: 0.8rem; color: var(--text-muted);">Active</span>'}
+                  ? '<span class="badge badge-cat badge-delegated-status">🛡️ Delegated</span>' 
+                  : '<span class="no-photo-text">Active</span>'}
             </td>
-            <td data-label="Actions" style="text-align: right;">
-              <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
-                <button onclick="openDelegateModal('${post.id}')" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.75rem; color:#818cf8 !important; border-color:rgba(129,140,248,0.3);">
+            <td data-label="Actions" class="text-right">
+              <div class="admin-actions-flex">
+                <button onclick="openDelegateModal('${post.id}')" class="btn btn-outline admin-action-btn btn-delegate">
                   ${isDelegated ? '✏️ Edit Delegate' : '🛡️ Delegate'}
                 </button>
-                ${!post.resolved ? `<button onclick="adminResolve('${post.id}')" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.75rem;">Resolve</button>` : ''}
-                <button onclick="adminDelete('${post.id}')" class="btn btn-danger-soft" style="padding: 5px 10px; font-size: 0.75rem;">Delete</button>
+                ${!post.resolved ? `<button onclick="adminResolve('${post.id}')" class="btn btn-outline admin-action-btn">Resolve</button>` : ''}
+                <button onclick="adminDelete('${post.id}')" class="btn btn-danger-soft admin-action-btn">Delete</button>
               </div>
             </td>
           </tr>
@@ -721,7 +723,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+            <td colspan="7" class="text-center-muted-padding">
               No registered user accounts found matching criteria.
             </td>
           </tr>
@@ -735,23 +737,23 @@
           <tr>
             <td data-label="Student Profile">
               <strong>${u.name}</strong>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${u.role === 'admin' ? '👑 Administrator' : '🎓 Student'}</div>
+              <div class="table-cell-sub">${u.role === 'admin' ? '👑 Administrator' : '🎓 Student'}</div>
             </td>
-            <td data-label="Matric No."><code style="background:var(--surface-3); padding:2px 6px; border-radius:4px; font-size:0.8rem;">${u.matric}</code></td>
-            <td data-label="Email"><a href="mailto:${u.email}" style="color:var(--text); text-decoration:underline;">${u.email}</a></td>
-            <td data-label="WhatsApp">${u.whatsapp && u.whatsapp !== 'N/A' ? `<a href="https://wa.me/${u.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" style="color:#4ade80;">💬 ${u.whatsapp}</a>` : '<span style="color:var(--text-muted);">None</span>'}</td>
+            <td data-label="Matric No."><code class="matric-code-badge">${u.matric}</code></td>
+            <td data-label="Email"><a href="mailto:${u.email}" class="user-email-link">${u.email}</a></td>
+            <td data-label="WhatsApp">${u.whatsapp && u.whatsapp !== 'N/A' ? `<a href="https://wa.me/${u.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="user-wa-link">💬 ${u.whatsapp}</a>` : '<span class="no-photo-text">None</span>'}</td>
             <td data-label="Contact Pref"><span class="badge badge-cat">${(u.contactPref || 'both').toUpperCase()}</span></td>
             <td data-label="Status">
               ${isSuspended 
-                ? '<span class="badge badge-missing" style="color:#f87171; border-color:rgba(248,113,113,0.4);">🚫 Suspended</span>' 
-                : '<span class="badge badge-found" style="color:#4ade80; border-color:rgba(74,222,128,0.4);">✅ Active</span>'}
+                ? '<span class="badge badge-missing badge-suspended-status">🚫 Suspended</span>' 
+                : '<span class="badge badge-found badge-active-status">✅ Active</span>'}
             </td>
-            <td data-label="Actions" style="text-align: right;">
-              <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
-                <button onclick="toggleUserStatus('${u.email}')" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem; color:${isSuspended ? '#4ade80' : '#fbbf24'} !important;">
+            <td data-label="Actions" class="text-right">
+              <div class="admin-actions-flex">
+                <button onclick="toggleUserStatus('${u.email}')" class="btn btn-outline admin-action-btn ${isSuspended ? 'btn-activate' : 'btn-suspend'}">
                   ${isSuspended ? '✅ Activate' : '🔒 Suspend'}
                 </button>
-                <button onclick="deleteUserAccount('${u.email}')" class="btn btn-danger-soft" style="padding: 4px 10px; font-size: 0.75rem;">🗑️ Delete</button>
+                <button onclick="deleteUserAccount('${u.email}')" class="btn btn-danger-soft admin-action-btn">🗑️ Delete</button>
               </div>
             </td>
           </tr>
