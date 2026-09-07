@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal - CampusTrace</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles/admin.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+</head>
+<body>
+
+  <!-- Admin Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.png" alt="CampusTrace Logo" />
+      <span>CampusTrace Admin</span>
+    </a>
+    <button class="hamburger-toggle" id="hamburger-btn" aria-label="Toggle Navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="nav-links" id="nav-menu">
+      <a href="index.html">Main Portal</a>
+      <a href="about.html">About</a>
+      <a href="dashboard.html">Campus Feed</a>
+      <button id="adminLogoutBtn" class="btn btn-outline nav-btn-logout nav-dash-hidden">Lock Admin</button>
+    </div>
+  </nav>
+
+  <main class="container container-dash">
+
+    <!-- PIN Lock Section (Shown if unauthenticated) -->
+    <section class="card pin-lock-card" id="pin-lock-section">
+      <div class="pin-lock-icon">🔒</div>
+      <h2>Admin Access Restricted</h2>
+      <p class="subtitle">Enter the 4-digit administrator PIN to access management controls.</p>
+
+      <form id="pin-form">
+        <div class="form-group">
+          <div class="pwd-input-group">
+            <input 
+              type="password" 
+              id="pin-input" 
+              class="pin-input-field" 
+              placeholder="••••" 
+              maxlength="4" 
+              pattern="[0-9]*" 
+              inputmode="numeric" 
+              required 
+              autofocus 
+            />
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('pin-input', this)" title="Toggle PIN visibility">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary pin-lock-btn">Unlock Admin Dashboard</button>
+      </form>
+    </section>
+
+    <!-- Admin Content Section (Hidden until PIN is authenticated) -->
+    <div id="admin-content-section" class="nav-dash-hidden">
+      
+      <!-- Admin View Tabs -->
+      <div class="dash-tabs">
+        <button class="tab-btn active" id="admin-tab-listings" onclick="switchAdminTab('listings')">📌 Portal Listings</button>
+        <button class="tab-btn" id="admin-tab-users" onclick="switchAdminTab('users')">👥 User Accounts Management</button>
+      </div>
+
+      <!-- Section 1: Listings Moderation -->
+      <div id="admin-listings-section">
+        <!-- Stats Overview -->
+        <div class="dash-stats">
+          <div class="stat-card">
+            <span class="stat-label">Total Portal Listings</span>
+            <span class="stat-value" id="admin-stat-total">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active Missing</span>
+            <span class="stat-value" id="admin-stat-missing">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active Found</span>
+            <span class="stat-value" id="admin-stat-found">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Reconnected Items</span>
+            <span class="stat-value" id="admin-stat-resolved">0</span>
+          </div>
+        </div>
+
+        <!-- Controls & Filter Bar -->
+        <section class="card">
+          <div class="admin-header-flex">
+            <div>
+              <h2>Moderation & Listing Management</h2>
+              <p class="subtitle text-margin-zero">Monitor, resolve, or permanently delete portal reports.</p>
+            </div>
+            <button onclick="fetchAdminData()" class="btn btn-outline nav-btn-settings">🔄 Refresh Table</button>
+          </div>
+
+          <div class="filter-bar">
+            <input type="text" id="admin-search" placeholder="🔍 Search by keyword, title, or poster..." />
+            <select id="admin-category-filter">
+              <option value="all">All Categories</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Student ID & Cards">Student ID & Cards</option>
+              <option value="Keys & Wallets">Keys & Wallets</option>
+              <option value="Bags & Backpacks">Bags & Backpacks</option>
+              <option value="Documents & Books">Documents & Books</option>
+              <option value="Clothing & Accessories">Clothing & Accessories</option>
+              <option value="Others">Others</option>
+            </select>
+            <select id="admin-status-filter">
+              <option value="all">All Status</option>
+              <option value="missing">Missing Items</option>
+              <option value="found">Found Items</option>
+              <option value="resolved">Resolved Items</option>
+            </select>
+          </div>
+
+          <!-- Moderation Data Table -->
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Item Details</th>
+                  <th>Category</th>
+                  <th>Posted By</th>
+                  <th>Date & Time</th>
+                  <th>Photo</th>
+                  <th>Status</th>
+                  <th class="text-right">Admin Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body">
+                <!-- Admin table rows load dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Section 2: User Account Management -->
+      <div id="admin-users-section" class="nav-dash-hidden">
+        <!-- User Stats Overview -->
+        <div class="dash-stats">
+          <div class="stat-card">
+            <span class="stat-label">Total Registered Users</span>
+            <span class="stat-value" id="admin-user-stat-total">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active Student Accounts</span>
+            <span class="stat-value" id="admin-user-stat-active">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Suspended Accounts</span>
+            <span class="stat-value" id="admin-user-stat-suspended">0</span>
+          </div>
+        </div>
+
+        <!-- User Controls & Filter Bar -->
+        <section class="card">
+          <div class="admin-header-flex">
+            <div>
+              <h2>User Accounts & Permissions</h2>
+              <p class="subtitle text-margin-zero">View, suspend/activate, or permanently delete student accounts.</p>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <input type="text" id="admin-user-search" placeholder="🔍 Search name, email, matric, or WhatsApp..." />
+            <select id="admin-user-status-filter">
+              <option value="all">All User Status</option>
+              <option value="active">Active Accounts</option>
+              <option value="suspended">Suspended Accounts</option>
+            </select>
+          </div>
+
+          <!-- User Management Data Table -->
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Student Profile</th>
+                  <th>Matriculation No.</th>
+                  <th>School Email</th>
+                  <th>WhatsApp</th>
+                  <th>Contact Pref</th>
+                  <th>Status</th>
+                  <th class="text-right">Admin Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table-body">
+                <!-- User rows load dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Add/Edit User Admin Modal Overlay -->
+  <div class="modal-overlay" id="admin-user-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="admin-user-modal-title">Add Student User Account</h2>
+        <button class="modal-close" onclick="closeModal('admin-user-modal')">&times;</button>
+      </div>
+      <p class="subtitle" id="admin-user-modal-sub">Create or modify student user profile details.</p>
+
+      <form id="admin-user-form">
+        <input type="hidden" id="admin-user-edit-mode" value="create" />
+        <input type="hidden" id="adm-u-target-email" />
+        
+        <div class="form-group">
+          <label for="adm-u-name">Full Name</label>
+          <input type="text" id="adm-u-name" placeholder="e.g. OAU Student" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-matric">Matriculation Number</label>
+          <input type="text" id="adm-u-matric" placeholder="e.g. SEN/2021/001" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-email">School Email</label>
+          <input type="email" id="adm-u-email" placeholder="e.g. student@student.oau.edu.ng" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-whatsapp">WhatsApp Number</label>
+          <input type="tel" id="adm-u-whatsapp" placeholder="e.g. 08123456789" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-contact-pref">Contact Preference</label>
+          <select id="adm-u-contact-pref">
+            <option value="both">WhatsApp & Email</option>
+            <option value="whatsapp">WhatsApp Only</option>
+            <option value="email">Email Only</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-password">Password <span class="pwd-hint">(Min. 4 characters)</span></label>
+          <div class="pwd-input-group">
+            <input type="password" id="adm-u-password" placeholder="Account password" />
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('adm-u-password', this)" title="Toggle password visibility">👁️</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="adm-u-status">Account Status</label>
+          <select id="adm-u-status">
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+
+        <div class="form-modal-row">
+          <button type="submit" class="btn btn-primary form-modal-btn">Save User Account</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('admin-user-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delegate Report Admin Modal Overlay -->
+  <div class="modal-overlay" id="admin-delegate-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Delegate Report Handling</h2>
+        <button class="modal-close" onclick="closeModal('admin-delegate-modal')">&times;</button>
+      </div>
+      <p class="subtitle">Assign this lost/found report to a campus unit or officer for resolution.</p>
+
+      <form id="admin-delegate-form">
+        <input type="hidden" id="del-post-id" />
+
+        <div class="form-group">
+          <label for="del-post-title">Item Report Title</label>
+          <input type="text" id="del-post-title" disabled class="input-readonly" />
+        </div>
+
+        <div class="form-group">
+          <label for="del-assignee">Delegate / Assign To</label>
+          <select id="del-assignee" required>
+            <option value="">-- Select Campus Unit or Officer --</option>
+            <option value="OAU Central Security Unit">🛡️ OAU Central Security Unit</option>
+            <option value="Division of Student Affairs (DSA)">🏛️ Division of Student Affairs (DSA)</option>
+            <option value="Department Secretariat / Officer">🏢 Department Secretariat / Officer</option>
+            <option value="Hezekiah Oluwasanmi Library Helpdesk">📚 Library Main Helpdesk</option>
+            <option value="Hall Warden & Security Office">🏠 Hall Warden Office</option>
+            <option value="SUG Executive Transport & Welfare Unit">🎓 Student Union Executive Unit</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="del-notes">Admin Notes & Pickup Instructions</label>
+          <textarea id="del-notes" rows="3" placeholder="Provide instructions for the assignee or location details for the student..."></textarea>
+        </div>
+
+        <div class="form-modal-row">
+          <button type="submit" class="btn btn-primary form-modal-btn">Save Delegation</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('admin-delegate-modal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-brand-logo">
+          <img src="assets/logo.png" alt="CampusTrace Logo" />
+          <span>CampusTrace Admin</span>
+        </a>
+        <p>System Administrator Management Portal for Obafemi Awolowo University.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="dashboard.html">Campus Feed</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Project & Code</h4>
+        <ul>
+          <li><a href="https://github.com/GROUP7SEN/CampusTrace" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+          <li><a href="https://github.com/GROUP7SEN/CampusTrace/blob/main/docs/CONTRIBUTORS.md" target="_blank" rel="noopener noreferrer">Contributors & Team</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Campus Support</h4>
+        <p>Obafemi Awolowo University, Ile-Ife</p>
+        <p class="support-city-text">Osun State, Nigeria</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 CampusTrace - OAU Lost & Found Portal. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+  <!-- App Script -->
+  <script src="script.js"></script>
+
+  <!-- Admin Logic Script -->
+  <script>
+    const ADMIN_PIN = '7024';
+
+    // PIN Authentication Handler
+    document.getElementById('pin-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const enteredPin = document.getElementById('pin-input').value.trim();
+
+      if (enteredPin === ADMIN_PIN) {
+        sessionStorage.setItem('adminPINAuth', 'true');
+        showToast('Admin access granted!', 'success');
+        checkAdminAuth();
+      } else {
+        showToast('Invalid Admin PIN. Access denied.', 'error');
+        document.getElementById('pin-input').value = '';
+        document.getElementById('pin-input').focus();
+      }
+    });
+
+    // Check PIN Auth Status
+    function checkAdminAuth() {
+      const isAuth = sessionStorage.getItem('adminPINAuth') === 'true';
+      const lockSec = document.getElementById('pin-lock-section');
+      const contentSec = document.getElementById('admin-content-section');
+      const logoutBtn = document.getElementById('adminLogoutBtn');
+
+      if (isAuth) {
+        lockSec.style.display = 'none';
+        contentSec.style.display = 'block';
+        logoutBtn.style.display = 'inline-flex';
+        fetchAdminData();
+        fetchAdminUserData();
+      } else {
+        lockSec.style.display = 'block';
+        contentSec.style.display = 'none';
+        logoutBtn.style.display = 'none';
+      }
+    }
+
+    // Admin Logout
+    document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('adminPINAuth');
+      showToast('Admin session locked.', 'info');
+      checkAdminAuth();
+    });
+
+    // Admin Tab Switcher
+    window.switchAdminTab = function(tab) {
+      const listingsSec = document.getElementById('admin-listings-section');
+      const usersSec = document.getElementById('admin-users-section');
+      const btnListings = document.getElementById('admin-tab-listings');
+      const btnUsers = document.getElementById('admin-tab-users');
+
+      if (tab === 'listings') {
+        listingsSec.style.display = 'block';
+        usersSec.style.display = 'none';
+        btnListings.classList.add('active');
+        btnUsers.classList.remove('active');
+      } else {
+        listingsSec.style.display = 'none';
+        usersSec.style.display = 'block';
+        btnListings.classList.remove('active');
+        btnUsers.classList.add('active');
+        renderAdminUsersTable();
+      }
+    };
+
+    let adminPostsCache = [];
+
+    // Real-Time Listener for Admin Data (Portal Listings)
+    function fetchAdminData() {
+      db.collection('portal_items').onSnapshot(snapshot => {
+        adminPostsCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderAdminStats();
+        renderAdminTable();
+      }, err => {
+        console.warn('Admin fetch fallback:', err);
+      });
+    }
+
+    // Render Stats Overview
+    function renderAdminStats() {
+      const total = adminPostsCache.length;
+      const missing = adminPostsCache.filter(p => p.type === 'missing' && !p.resolved).length;
+      const found = adminPostsCache.filter(p => p.type === 'found' && !p.resolved).length;
+      const resolved = adminPostsCache.filter(p => p.resolved).length;
+
+      document.getElementById('admin-stat-total').textContent = total;
+      document.getElementById('admin-stat-missing').textContent = missing;
+      document.getElementById('admin-stat-found').textContent = found;
+      document.getElementById('admin-stat-resolved').textContent = resolved;
+    }
+
+    // Render Admin Management Table (Listings)
+    function renderAdminTable() {
+      const tbody = document.getElementById('admin-table-body');
+      const searchQuery = (document.getElementById('admin-search').value || '').toLowerCase();
+      const catFilter = document.getElementById('admin-category-filter').value;
+      const statusFilter = document.getElementById('admin-status-filter').value;
+
+      if (!tbody) return;
+
+      const filtered = adminPostsCache.filter(post => {
+        const titleMatch = (post.title || '').toLowerCase().includes(searchQuery);
+        const descMatch = (post.desc || '').toLowerCase().includes(searchQuery);
+        const userMatch = (post.userName || '').toLowerCase().includes(searchQuery);
+        const emailMatch = (post.email || '').toLowerCase().includes(searchQuery);
+        const matchesSearch = titleMatch || descMatch || userMatch || emailMatch;
+
+        const matchesCat = catFilter === 'all' || post.category === catFilter;
+
+        let matchesStatus = true;
+        if (statusFilter === 'missing') matchesStatus = post.type === 'missing' && !post.resolved;
+        else if (statusFilter === 'found') matchesStatus = post.type === 'found' && !post.resolved;
+        else if (statusFilter === 'resolved') matchesStatus = post.resolved === true;
+
+        return matchesSearch && matchesCat && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center-muted-padding">
+              No listings found matching filter criteria.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(post => {
+        const isDelegated = Boolean(post.delegatedTo);
+        let dateFormatted = 'Recently';
+        if (post.createdAt) {
+          const d = post.createdAt.toDate ? post.createdAt.toDate() : new Date(post.createdAt);
+          if (!isNaN(d.getTime())) {
+            dateFormatted = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          }
+        }
+
+        return `
+          <tr>
+            <td data-label="Type">
+              ${post.type === 'missing' 
+                ? '<span class="badge badge-missing">📢 Missing</span>' 
+                : '<span class="badge badge-found">🔍 Found</span>'}
+            </td>
+            <td data-label="Item Details">
+              <strong>${post.title}</strong>
+              <div class="table-cell-desc">${typeof formatDescWithReadMore === 'function' ? formatDescWithReadMore(post.desc, 45) : post.desc}</div>
+              ${isDelegated ? `<div class="delegated-notice-text">🛡️ <strong>Delegated:</strong> ${post.delegatedTo}</div>` : ''}
+            </td>
+            <td data-label="Category"><span class="badge badge-cat">${post.category || 'General'}</span></td>
+            <td data-label="Posted By">
+              <div>${post.userName || 'Unknown'}</div>
+              <div class="table-cell-sub">${post.email}</div>
+            </td>
+            <td data-label="Date & Time"><span class="table-cell-date">📅 ${dateFormatted}</span></td>
+            <td data-label="Photo">
+              ${post.imageUrl 
+                ? `<img src="${post.imageUrl}" class="table-img-thumb" onclick="openImageLightbox('${post.imageUrl}')" title="Click to view photo in full screen" />` 
+                : '<span class="no-photo-text">No photo</span>'}
+            </td>
+            <td data-label="Status">
+              ${post.resolved 
+                ? '<span class="badge badge-resolved">✅ Resolved</span>' 
+                : isDelegated 
+                  ? '<span class="badge badge-cat badge-delegated-status">🛡️ Delegated</span>' 
+                  : '<span class="no-photo-text">Active</span>'}
+            </td>
+            <td data-label="Actions" class="text-right">
+              <div class="admin-actions-flex">
+                <button onclick="openDelegateModal('${post.id}')" class="btn btn-outline admin-action-btn btn-delegate">
+                  ${isDelegated ? '✏️ Edit Delegate' : '🛡️ Delegate'}
+                </button>
+                ${!post.resolved ? `<button onclick="adminResolve('${post.id}')" class="btn btn-outline admin-action-btn">Resolve</button>` : ''}
+                <button onclick="adminDelete('${post.id}')" class="btn btn-danger-soft admin-action-btn">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Modal Control & Submit Handler for Report Delegation
+    window.openDelegateModal = function(id) {
+      const post = adminPostsCache.find(p => p.id === id);
+      if (!post) return showToast('Report item not found.', 'error');
+
+      document.getElementById('del-post-id').value = post.id;
+      document.getElementById('del-post-title').value = post.title || '';
+      document.getElementById('del-assignee').value = post.delegatedTo || '';
+      document.getElementById('del-notes').value = post.delegatedNotes || '';
+      openModal('admin-delegate-modal');
+    };
+
+    document.getElementById('admin-delegate-form')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const id = document.getElementById('del-post-id').value;
+      const delegatedTo = document.getElementById('del-assignee').value;
+      const delegatedNotes = document.getElementById('del-notes').value.trim();
+
+      if (!id || !delegatedTo) return showToast('Please select a unit or officer to delegate.', 'warning');
+
+      db.collection('portal_items').doc(id).update({
+        delegatedTo,
+        delegatedNotes,
+        delegatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        showToast(`Report delegated to ${delegatedTo} successfully!`, 'success');
+        closeModal('admin-delegate-modal');
+      }).catch(err => {
+        console.error('Delegation error:', err);
+        showToast('Failed to delegate report.', 'error');
+      });
+    });
+
+    // Admin Resolve Handler
+    window.adminResolve = function(id) {
+      db.collection('portal_items').doc(id).update({ resolved: true })
+        .then(() => showToast('Post marked as resolved.', 'success'));
+    };
+
+    // Admin Delete Handler
+    window.adminDelete = function(id) {
+      if (confirm('Permanently delete this report from the portal database?')) {
+        db.collection('portal_items').doc(id).delete()
+          .then(() => showToast('Post deleted permanently by Admin.', 'info'));
+      }
+    };
+
+    // ─────────────────────────────────────────
+    // USER MANAGEMENT LOGIC
+    // ─────────────────────────────────────────
+    let adminUsersCache = [];
+
+    // Real-Time & LocalStorage Sync for Users
+    function fetchAdminUserData() {
+      if (typeof db !== 'undefined') {
+        db.collection('users').onSnapshot(snapshot => {
+          const firestoreUsers = snapshot.docs.map(doc => ({ email: doc.id, ...doc.data() }));
+          mergeUserSources(firestoreUsers);
+        }, err => {
+          console.warn('Firestore users fallback:', err);
+          mergeUserSources([]);
+        });
+      } else {
+        mergeUserSources([]);
+      }
+    }
+
+    function mergeUserSources(firestoreUsers) {
+      const deletedList = JSON.parse(localStorage.getItem('deletedUsersList') || '[]');
+      const deletedSet = new Set(deletedList.map(e => (e || '').toLowerCase()));
+
+      let localUsers = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      
+      // Ensure default accounts exist if storage is empty and no deletions have occurred
+      if (localUsers.length === 0 && deletedList.length === 0) {
+        localUsers = [
+          { name: 'Joshua Taiwo', matric: 'MRH/2022/129', email: 'joshuataiwo@student.oauife.edu.ng', whatsapp: '08123456789', contactPref: 'both', status: 'active', role: 'student' },
+          { name: 'Samuel Ezekiel', matric: 'SWE/2023/072', email: 'e.samuel.swe2023072@student.oauife.edu.ng', whatsapp: '08098765432', contactPref: 'both', status: 'active', role: 'student' }
+        ];
+        localStorage.setItem('registeredAccounts', JSON.stringify(localUsers));
+      }
+
+      const userMap = new Map();
+
+      // 1. Add local accounts (skipping deleted)
+      localUsers.forEach(u => {
+        const em = (u.email || '').toLowerCase();
+        if (em && !deletedSet.has(em)) {
+          userMap.set(em, {
+            name: u.name || 'Student User',
+            matric: (u.matric || 'N/A').toUpperCase(),
+            email: em,
+            whatsapp: u.whatsapp || 'N/A',
+            contactPref: u.contactPref || 'both',
+            status: u.status || 'active',
+            role: u.role || 'student',
+            password: u.password || ''
+          });
+        }
+      });
+
+      // 2. Add Firestore users collection (skipping deleted)
+      firestoreUsers.forEach(u => {
+        const em = (u.email || '').toLowerCase();
+        if (em && !deletedSet.has(em)) {
+          const existing = userMap.get(em) || {};
+          userMap.set(em, {
+            name: u.name || existing.name || 'Student User',
+            matric: (u.matric || existing.matric || 'N/A').toUpperCase(),
+            email: em,
+            whatsapp: u.whatsapp || existing.whatsapp || 'N/A',
+            contactPref: u.contactPref || existing.contactPref || 'both',
+            status: u.status || existing.status || 'active',
+            role: u.role || existing.role || 'student',
+            password: existing.password || u.password || ''
+          });
+        }
+      });
+
+      // 3. Extract unique posters from portal items cache (skipping deleted)
+      (adminPostsCache || []).forEach(p => {
+        const em = (p.email || '').toLowerCase();
+        if (em && !deletedSet.has(em) && !userMap.has(em)) {
+          userMap.set(em, {
+            name: p.userName || 'Student Poster',
+            matric: 'N/A',
+            email: em,
+            whatsapp: p.whatsapp || 'N/A',
+            contactPref: p.contactPref || 'both',
+            status: 'active',
+            role: 'student',
+            password: ''
+          });
+        }
+      });
+
+      adminUsersCache = Array.from(userMap.values());
+      renderAdminUsersStats();
+      renderAdminUsersTable();
+    }
+
+    function renderAdminUsersStats() {
+      const total = adminUsersCache.length;
+      const active = adminUsersCache.filter(u => u.status !== 'suspended').length;
+      const suspended = adminUsersCache.filter(u => u.status === 'suspended').length;
+
+      document.getElementById('admin-user-stat-total').textContent = total;
+      document.getElementById('admin-user-stat-active').textContent = active;
+      document.getElementById('admin-user-stat-suspended').textContent = suspended;
+    }
+
+    function renderAdminUsersTable() {
+      const tbody = document.getElementById('admin-users-table-body');
+      const query = (document.getElementById('admin-user-search')?.value || '').toLowerCase();
+      const statusFilter = document.getElementById('admin-user-status-filter')?.value || 'all';
+
+      if (!tbody) return;
+
+      const filtered = adminUsersCache.filter(u => {
+        const nameMatch = (u.name || '').toLowerCase().includes(query);
+        const emailMatch = (u.email || '').toLowerCase().includes(query);
+        const matricMatch = (u.matric || '').toLowerCase().includes(query);
+        const waMatch = (u.whatsapp || '').toLowerCase().includes(query);
+        const matchesQuery = nameMatch || emailMatch || matricMatch || waMatch;
+
+        let matchesStatus = true;
+        if (statusFilter === 'active') matchesStatus = u.status !== 'suspended';
+        else if (statusFilter === 'suspended') matchesStatus = u.status === 'suspended';
+
+        return matchesQuery && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center-muted-padding">
+              No registered user accounts found matching criteria.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isSuspended = u.status === 'suspended';
+        return `
+          <tr>
+            <td data-label="Student Profile">
+              <strong>${u.name}</strong>
+              <div class="table-cell-sub">${u.role === 'admin' ? '👑 Administrator' : '🎓 Student'}</div>
+            </td>
+            <td data-label="Matric No."><code class="matric-code-badge">${u.matric}</code></td>
+            <td data-label="Email"><a href="mailto:${u.email}" class="user-email-link">${u.email}</a></td>
+            <td data-label="WhatsApp">${u.whatsapp && u.whatsapp !== 'N/A' ? `<a href="https://wa.me/${u.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="user-wa-link">💬 ${u.whatsapp}</a>` : '<span class="no-photo-text">None</span>'}</td>
+            <td data-label="Contact Pref"><span class="badge badge-cat">${(u.contactPref || 'both').toUpperCase()}</span></td>
+            <td data-label="Status">
+              ${isSuspended 
+                ? '<span class="badge badge-missing badge-suspended-status">🚫 Suspended</span>' 
+                : '<span class="badge badge-found badge-active-status">✅ Active</span>'}
+            </td>
+            <td data-label="Actions" class="text-right">
+              <div class="admin-actions-flex">
+                <button onclick="toggleUserStatus('${u.email}')" class="btn btn-outline admin-action-btn ${isSuspended ? 'btn-activate' : 'btn-suspend'}">
+                  ${isSuspended ? '✅ Activate' : '🔒 Suspend'}
+                </button>
+                <button onclick="deleteUserAccount('${u.email}')" class="btn btn-danger-soft admin-action-btn">🗑️ Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Modal Control Functions for Admin User Management
+    window.openAddUserModal = function() {
+      document.getElementById('admin-user-modal-title').textContent = 'Add Student User Account';
+      document.getElementById('admin-user-modal-sub').textContent = 'Register a new student user account on CampusTrace.';
+      document.getElementById('admin-user-edit-mode').value = 'create';
+      document.getElementById('adm-u-target-email').value = '';
+      document.getElementById('adm-u-name').value = '';
+      document.getElementById('adm-u-matric').value = '';
+      document.getElementById('adm-u-email').value = '';
+      document.getElementById('adm-u-email').readOnly = false;
+      document.getElementById('adm-u-whatsapp').value = '';
+      document.getElementById('adm-u-contact-pref').value = 'both';
+      document.getElementById('adm-u-password').value = '';
+      document.getElementById('adm-u-password').required = true;
+      document.getElementById('adm-u-status').value = 'active';
+      openModal('admin-user-modal');
+    };
+
+    window.openEditUserModal = function(email) {
+      const targetEmail = (email || '').toLowerCase();
+      const user = adminUsersCache.find(u => u.email.toLowerCase() === targetEmail);
+      if (!user) return showToast('User account not found.', 'error');
+
+      document.getElementById('admin-user-modal-title').textContent = 'Edit Student User Account';
+      document.getElementById('admin-user-modal-sub').textContent = `Modify details for ${user.name} (${user.email}).`;
+      document.getElementById('admin-user-edit-mode').value = 'edit';
+      document.getElementById('adm-u-target-email').value = targetEmail;
+      document.getElementById('adm-u-name').value = user.name || '';
+      document.getElementById('adm-u-matric').value = user.matric || '';
+      document.getElementById('adm-u-email').value = user.email || '';
+      document.getElementById('adm-u-email').readOnly = true;
+      document.getElementById('adm-u-whatsapp').value = user.whatsapp || '';
+      document.getElementById('adm-u-contact-pref').value = user.contactPref || 'both';
+      document.getElementById('adm-u-password').value = '';
+      document.getElementById('adm-u-password').required = false;
+      document.getElementById('adm-u-status').value = user.status || 'active';
+      openModal('admin-user-modal');
+    };
+
+    // Save/Update User Form Handler
+    document.getElementById('admin-user-form')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const mode = document.getElementById('admin-user-edit-mode').value;
+      const targetEmail = (document.getElementById('adm-u-target-email').value || document.getElementById('adm-u-email').value).trim().toLowerCase();
+      const name = document.getElementById('adm-u-name').value.trim();
+      const matric = document.getElementById('adm-u-matric').value.trim().toUpperCase();
+      const email = (document.getElementById('adm-u-email').value.trim() || targetEmail).toLowerCase();
+      const whatsapp = document.getElementById('adm-u-whatsapp').value.trim();
+      const contactPref = document.getElementById('adm-u-contact-pref').value;
+      const password = document.getElementById('adm-u-password').value.trim();
+      const status = document.getElementById('adm-u-status').value;
+
+      if (name.length < 3) return showToast('Name must be at least 3 characters.', 'warning');
+      if (whatsapp.length < 10) return showToast('Enter a valid WhatsApp number.', 'warning');
+
+      const userData = { name, matric: matric.toUpperCase(), email: email.toLowerCase(), whatsapp, contactPref, status, role: 'student' };
+
+      // Preserve existing password if not updated
+      const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      const index = registeredAccounts.findIndex(u => (u.email || '').toLowerCase() === email);
+      
+      if (password && password.length >= 4) {
+        userData.password = password;
+      } else if (index >= 0 && registeredAccounts[index].password) {
+        userData.password = registeredAccounts[index].password;
+      }
+
+      if (index >= 0) {
+        registeredAccounts[index] = { ...registeredAccounts[index], ...userData };
+      } else {
+        registeredAccounts.push(userData);
+      }
+      localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+
+      // Update Firestore users collection with merge
+      if (typeof db !== 'undefined') {
+        db.collection('users').doc(email).set(userData, { merge: true })
+          .then(() => showToast(`User account ${mode === 'create' ? 'created' : 'updated'} successfully!`, 'success'))
+          .catch(err => console.warn('Firestore update fallback:', err));
+      } else {
+        showToast(`User account ${mode === 'create' ? 'created' : 'updated'} locally!`, 'success');
+      }
+
+      closeModal('admin-user-modal');
+      fetchAdminUserData();
+    });
+
+    // Toggle Suspend/Activate User Account
+    window.toggleUserStatus = function(email) {
+      const targetEmail = (email || '').toLowerCase();
+      const user = adminUsersCache.find(u => u.email.toLowerCase() === targetEmail);
+      if (!user) return;
+
+      const newStatus = user.status === 'suspended' ? 'active' : 'suspended';
+      const actionMsg = newStatus === 'suspended' ? 'suspended' : 'activated';
+
+      if (confirm(`Are you sure you want to change ${user.name}'s account status to ${newStatus.toUpperCase()}?`)) {
+        // Update LocalStorage
+        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+        const index = registeredAccounts.findIndex(u => (u.email || '').toLowerCase() === targetEmail);
+        if (index >= 0) {
+          registeredAccounts[index].status = newStatus;
+          localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+        }
+
+        // Update Firestore with merge
+        if (typeof db !== 'undefined') {
+          db.collection('users').doc(targetEmail).set({ status: newStatus }, { merge: true })
+            .then(() => showToast(`Account ${user.email} has been ${actionMsg}.`, 'info'))
+            .catch(err => console.warn(err));
+        }
+        fetchAdminUserData();
+      }
+    };
+
+    // Reset User Password Handler
+    window.resetUserPassword = function(email) {
+      const targetEmail = (email || '').toLowerCase();
+      if (!targetEmail) return;
+
+      const newPwd = prompt(`Enter new password for student account (${email}):`);
+      if (newPwd === null) return; // User cancelled
+      if (newPwd.trim().length < 4) return showToast('Password must be at least 4 characters long.', 'warning');
+
+      const pwd = newPwd.trim();
+      const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      const index = registeredAccounts.findIndex(u => (u.email || '').toLowerCase() === targetEmail);
+      
+      if (index >= 0) {
+        registeredAccounts[index].password = pwd;
+      } else {
+        registeredAccounts.push({
+          name: 'Student User',
+          matric: 'N/A',
+          email: targetEmail,
+          whatsapp: 'N/A',
+          contactPref: 'both',
+          status: 'active',
+          role: 'student',
+          password: pwd
+        });
+      }
+      localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+
+      if (typeof db !== 'undefined') {
+        db.collection('users').doc(targetEmail).set({ password: pwd }, { merge: true })
+          .then(() => showToast(`Password for ${email} reset successfully!`, 'success'))
+          .catch(err => console.warn('Firestore pwd reset fallback:', err));
+      } else {
+        showToast(`Password for ${email} reset locally!`, 'success');
+      }
+
+      fetchAdminUserData();
+    };
+
+    // Delete User Account Handler
+    window.deleteUserAccount = function(email) {
+      const targetEmail = (email || '').toLowerCase();
+      if (!targetEmail) return;
+
+      if (confirm(`Permanently delete account for ${email}? This will remove their user credentials.`)) {
+        // 1. Persist to deletedUsersList blacklist in localStorage
+        const deletedList = JSON.parse(localStorage.getItem('deletedUsersList') || '[]');
+        if (!deletedList.includes(targetEmail)) {
+          deletedList.push(targetEmail);
+          localStorage.setItem('deletedUsersList', JSON.stringify(deletedList));
+        }
+
+        // 2. Remove from local registered accounts
+        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+        const updatedAccounts = registeredAccounts.filter(u => (u.email || '').toLowerCase() !== targetEmail);
+        localStorage.setItem('registeredAccounts', JSON.stringify(updatedAccounts));
+
+        // 3. Delete doc from Firestore users collection
+        if (typeof db !== 'undefined') {
+          db.collection('users').doc(targetEmail).delete()
+            .then(() => showToast(`Account ${email} deleted permanently.`, 'info'))
+            .catch(err => console.warn(err));
+        }
+
+        fetchAdminUserData();
+      }
+    };
+
+    // Admin Filter Listeners
+    document.getElementById('admin-search')?.addEventListener('input', renderAdminTable);
+    document.getElementById('admin-category-filter')?.addEventListener('change', renderAdminTable);
+    document.getElementById('admin-status-filter')?.addEventListener('change', renderAdminTable);
+
+    document.getElementById('admin-user-search')?.addEventListener('input', renderAdminUsersTable);
+    document.getElementById('admin-user-status-filter')?.addEventListener('change', renderAdminUsersTable);
+
+    // Initialize check on page load
+    document.addEventListener('DOMContentLoaded', checkAdminAuth);
+  </script>
+</body>
+</html>

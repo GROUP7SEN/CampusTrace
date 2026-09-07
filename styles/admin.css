@@ -1,0 +1,158 @@
+/* ─────────────────────────────────────────
+   CampusTrace — Admin Portal Modular Stylesheet
+   ───────────────────────────────────────── */
+
+.admin-container {
+  max-width: 960px;
+}
+
+.pin-lock-card {
+  max-width: 420px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+.pin-lock-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.pin-lock-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.admin-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-header-flex p {
+  margin-bottom: 0;
+}
+
+.admin-actions-flex {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-action-btn {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+}
+
+.btn-activate {
+  color: #4ade80 !important;
+}
+
+.btn-suspend {
+  color: #fbbf24 !important;
+}
+
+.btn-delegate {
+  color: #818cf8 !important;
+  border-color: rgba(129, 140, 248, 0.3) !important;
+}
+
+.badge-delegated-status {
+  color: #818cf8;
+  border-color: rgba(129, 140, 248, 0.3);
+}
+
+.delegated-notice-text {
+  font-size: 0.75rem;
+  color: #818cf8;
+  margin-top: 4px;
+}
+
+.table-cell-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.table-cell-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.table-cell-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.table-img-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.no-photo-text {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.matric-code-badge {
+  background: var(--surface-3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.user-email-link {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.user-wa-link {
+  color: #4ade80;
+}
+
+.badge-suspended-status {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.badge-active-status {
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.modal-actions-flex {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.modal-btn-grow {
+  flex: 1;
+}
+
+.input-readonly {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center-muted-padding {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 30px;
+}
+
+.text-margin-zero {
+  margin-bottom: 0;
+}
+
