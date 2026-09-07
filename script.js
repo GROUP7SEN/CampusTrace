@@ -100,9 +100,9 @@ window.togglePasswordVisibility = function(inputId, btn) {
 };
 
 // Auth Guard & User Session
-const currentUserName = localStorage.getItem('userName') || '';
-const currentUserEmail = localStorage.getItem('userEmail') || '';
-const currentUserMatric = localStorage.getItem('userMatric') || '';
+const currentUserName = (localStorage.getItem('userName') || '').trim();
+const currentUserEmail = (localStorage.getItem('userEmail') || '').trim().toLowerCase();
+const currentUserMatric = (localStorage.getItem('userMatric') || '').trim().toUpperCase();
 const currentUserWhatsapp = localStorage.getItem('userWhatsapp') || '';
 const currentUserContactPref = localStorage.getItem('userContactPref') || 'both';
 
@@ -395,11 +395,12 @@ function renderFeed() {
 
     return `
       <div class="feed-card ${post.type} ${post.resolved ? 'resolved' : ''}">
+        ${post.resolved ? '<div class="card-resolved-ribbon">RECONNECTED</div>' : ''}
         <div class="card-header">
           <div class="avatar">${post.initials || getInitials(post.userName)}</div>
           <div class="meta">
             <strong>${post.userName || 'Anonymous Student'}</strong>
-            <span>📅 ${dateFormatted} • ${post.email}</span>
+            <span>📅 ${dateFormatted}</span>
           </div>
         </div>
         
@@ -409,7 +410,6 @@ function renderFeed() {
               ? '<span class="badge badge-missing">📢 Missing</span>' 
               : '<span class="badge badge-found">🔍 Found</span>'}
             ${post.category ? `<span class="badge badge-cat">🏷️ ${post.category}</span>` : ''}
-            ${post.resolved ? '<span class="badge badge-resolved">✅ Resolved & Reconnected</span>' : ''}
           </div>
           
           <h3>${post.title}</h3>
@@ -424,8 +424,8 @@ function renderFeed() {
         </div>
 
         <div class="card-footer">
-          ${!isOwner ? `
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          ${(!isOwner && !post.resolved) ? `
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
               ${allowWa ? `
                 <a href="https://wa.me/${formattedWa}?text=${encodeURIComponent("Hi, I'm contacting you regarding your CampusTrace post: " + post.title)}" target="_blank" class="btn btn-outline" style="font-size:0.8rem; border-color: rgba(74, 222, 128, 0.35); color: #4ade80 !important;">
                   💬 WhatsApp Poster
@@ -438,7 +438,7 @@ function renderFeed() {
               ` : ''}
             </div>
           ` : '<div></div>'}
-          <div style="display:flex; gap:8px;">
+          <div style="display:flex; gap:8px; align-items: center;">
             ${isOwner && !post.resolved ? `<button onclick="markResolved('${post.id}')" class="btn btn-primary" style="font-size:0.8rem;">Mark Resolved</button>` : ''}
             ${isOwner ? `<button onclick="deletePost('${post.id}')" class="btn btn-danger" style="font-size:0.8rem;">Delete</button>` : ''}
           </div>

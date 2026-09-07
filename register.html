@@ -134,8 +134,8 @@
       }
 
       const name = document.getElementById('reg-name').value.trim();
-      const matric = document.getElementById('reg-matric').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
+      const matric = document.getElementById('reg-matric').value.trim().toUpperCase();
+      const email = document.getElementById('reg-email').value.trim().toLowerCase();
       const whatsapp = document.getElementById('reg-whatsapp').value.trim();
       const contactPref = 'both';
       const password = document.getElementById('reg-password').value.trim();
@@ -172,7 +172,7 @@
         return showToast('Password must be at least 4 characters long.', 'warning');
       }
 
-      const userData = { name, matric, email, whatsapp, contactPref, password, status: 'active', role: 'student' };
+      const userData = { name, matric: matric.toUpperCase(), email: email.toLowerCase(), whatsapp, contactPref, password, status: 'active', role: 'student' };
 
       // Remove from deletedUsersList if re-registering
       const deletedList = JSON.parse(localStorage.getItem('deletedUsersList') || '[]');
@@ -181,7 +181,10 @@
 
       // Save account to registeredAccounts registry for login lookup
       const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
-      const existingIndex = registeredAccounts.findIndex(acc => acc.email.toLowerCase() === email.toLowerCase() || acc.matric.toLowerCase() === matric.toLowerCase());
+      const existingIndex = registeredAccounts.findIndex(acc => 
+        (acc.email || '').toLowerCase() === email.toLowerCase() || 
+        (acc.matric || '').toUpperCase() === matric.toUpperCase()
+      );
       
       if (existingIndex >= 0) {
         registeredAccounts[existingIndex] = { ...registeredAccounts[existingIndex], ...userData };
@@ -194,10 +197,11 @@
       if (typeof db !== 'undefined') {
         db.collection('users').doc(email.toLowerCase()).set({
           name,
-          matric,
+          matric: matric.toUpperCase(),
           email: email.toLowerCase(),
           whatsapp,
           contactPref,
+          password,
           status: 'active',
           role: 'student',
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -206,8 +210,8 @@
 
       // Set active session
       localStorage.setItem('userName', name);
-      localStorage.setItem('userMatric', matric);
-      localStorage.setItem('userEmail', email);
+      localStorage.setItem('userMatric', matric.toUpperCase());
+      localStorage.setItem('userEmail', email.toLowerCase());
       localStorage.setItem('userWhatsapp', whatsapp);
       localStorage.setItem('userContactPref', contactPref);
 

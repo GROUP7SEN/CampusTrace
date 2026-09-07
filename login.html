@@ -103,7 +103,7 @@
   <script src="script.js"></script>
   <script>
     // Handle Login Form Submission with Email or Matric Number
-    document.getElementById('login-form').addEventListener('submit', function (e) {
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       const submitBtn = this.querySelector('button[type="submit"]');
       if (submitBtn) {
@@ -111,20 +111,65 @@
         submitBtn.innerHTML = '<span class="spinner"></span> Signing In...';
       }
 
-      const identifier = document.getElementById('login-identifier').value.trim();
-      const password = document.getElementById('login-password').value.trim();
-
-      const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
-      
-      const foundAccount = registeredAccounts.find(acc => 
-        acc.email.toLowerCase() === identifier.toLowerCase() || 
-        acc.matric.toLowerCase() === identifier.toLowerCase()
-      );
-
       function resetBtn() {
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = 'Sign In';
+        }
+      }
+
+      const identifier = document.getElementById('login-identifier').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      // Check deleted accounts list
+      const deletedList = JSON.parse(localStorage.getItem('deletedUsersList') || '[]');
+      const isDeleted = deletedList.some(e => (e || '').toLowerCase() === identifier.toLowerCase());
+      if (isDeleted) {
+        resetBtn();
+        return showToast('Account no longer exists. Please register a new account.', 'error');
+      }
+
+      let registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+      if (registeredAccounts.length === 0) {
+        registeredAccounts = [
+          { name: 'Joshua Taiwo', matric: 'MRH/2022/129', email: 'joshuataiwo@student.oauife.edu.ng', whatsapp: '08123456789', contactPref: 'both', status: 'active', role: 'student', password: 'password' },
+          { name: 'Samuel Ezekiel', matric: 'SWE/2023/072', email: 'e.samuel.swe2023072@student.oauife.edu.ng', whatsapp: '08098765432', contactPref: 'both', status: 'active', role: 'student', password: 'password' }
+        ];
+        localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+      }
+
+      let foundAccount = registeredAccounts.find(acc => 
+        (acc.email || '').toLowerCase() === identifier.toLowerCase() || 
+        (acc.matric || '').toUpperCase() === identifier.toUpperCase()
+      );
+
+      // Always attempt to fetch the latest account data from Firestore users collection
+      if (typeof db !== 'undefined') {
+        try {
+          const snap = await db.collection('users').get();
+          const firestoreUsers = snap.docs.map(doc => ({ email: doc.id, ...doc.data() }));
+          const latestFsUser = firestoreUsers.find(acc => 
+            (acc.email || '').toLowerCase() === identifier.toLowerCase() || 
+            (acc.matric || '').toUpperCase() === identifier.toUpperCase()
+          );
+
+          if (latestFsUser && !deletedList.includes((latestFsUser.email || '').toLowerCase())) {
+            foundAccount = { ...foundAccount, ...latestFsUser };
+            
+            // Sync/update local accounts array
+            const idx = registeredAccounts.findIndex(acc => 
+              (acc.email || '').toLowerCase() === (foundAccount.email || '').toLowerCase() ||
+              (acc.matric || '').toUpperCase() === (foundAccount.matric || '').toUpperCase()
+            );
+            if (idx >= 0) {
+              registeredAccounts[idx] = foundAccount;
+            } else {
+              registeredAccounts.push(foundAccount);
+            }
+            localStorage.setItem('registeredAccounts', JSON.stringify(registeredAccounts));
+          }
+        } catch (err) {
+          console.warn('Firestore user sync fallback:', err);
         }
       }
 
@@ -135,13 +180,17 @@
         }
 
         // Validate password against stored account
-        if (foundAccount.password !== password) {
+        const accountPwd = (foundAccount.password !== undefined && foundAccount.password !== null) ? String(foundAccount.password).trim() : '';
+        const enteredPwd = password.trim();
+
+        if (accountPwd && accountPwd !== enteredPwd) {
           resetBtn();
           return showToast('Incorrect password. Please try again.', 'error');
         }
-        localStorage.setItem('userName', foundAccount.name);
-        localStorage.setItem('userMatric', foundAccount.matric);
-        localStorage.setItem('userEmail', foundAccount.email);
+
+        localStorage.setItem('userName', foundAccount.name || 'Student User');
+        localStorage.setItem('userMatric', (foundAccount.matric || '').toUpperCase());
+        localStorage.setItem('userEmail', (foundAccount.email || '').toLowerCase());
         localStorage.setItem('userWhatsapp', foundAccount.whatsapp || '');
         localStorage.setItem('userContactPref', foundAccount.contactPref || 'both');
         localStorage.setItem('userStatus', foundAccount.status || 'active');

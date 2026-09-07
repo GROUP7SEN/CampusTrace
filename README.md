@@ -14,7 +14,7 @@ CampusTrace is a modern, student-centric Lost & Found web platform engineered sp
 - **Project Leadership**:
   - 👑 **Project Lead**: [Samuel Ezekiel](https://samkiel.dev) ([@samkiell](https://github.com/samkiell))
   - ⭐ **Assistant Lead**: [Abba's 🎀](https://github.com/abbasthelittlemonstee) ([@abbasthelittlemonstee](https://github.com/abbasthelittlemonstee))
-- **Team Members**: [Group 7 Contributors List (23 Members)](./docs/CONTRIBUTORS.md)
+- **Team Members**: [Group 7 Contributors List (28 Members)](./docs/CONTRIBUTORS.md)
 
 ---
 

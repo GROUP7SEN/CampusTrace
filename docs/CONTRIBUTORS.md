@@ -1,6 +1,6 @@
 # Group 7 - SEN106/216 Project Contributors
 
-CampusTrace is designed and developed by Group 7 for SEN106/216 at Obafemi Awolowo University (OAU), Ile-Ife.
+CampusTrace is designed and developed by Group 7 (28 Members) for SEN106/216 at Obafemi Awolowo University (OAU), Ile-Ife.
 
 > **Live Application**: [https://campustrace.samkiel.dev](https://campustrace.samkiel.dev)
 
@@ -11,7 +11,7 @@ CampusTrace is designed and developed by Group 7 for SEN106/216 at Obafemi Awolo
 
 ---
 
-## Group 7 Team Members (23)
+## Group 7 Team Members (28)
 
 | # | Name / Display Name | GitHub Username | GitHub Profile |
 |---|---------------------|-----------------|----------------|
@@ -38,3 +38,8 @@ CampusTrace is designed and developed by Group 7 for SEN106/216 at Obafemi Awolo
 | 21 | Sam224-droid | `@Sam224-droid` | [github.com/Sam224-droid](https://github.com/Sam224-droid) |
 | 22 | THEONEMANTEAM | `@THEONEMANTEAM` | [github.com/THEONEMANTEAM](https://github.com/THEONEMANTEAM) |
 | 23 | UmmuFaysol | `@UmmuFaysol` | [github.com/UmmuFaysol](https://github.com/UmmuFaysol) |
+| 24 | Group 7 Member | `N/A` | GitHub Unavailable |
+| 25 | Group 7 Member | `N/A` | GitHub Unavailable |
+| 26 | Group 7 Member | `N/A` | GitHub Unavailable |
+| 27 | Group 7 Member | `N/A` | GitHub Unavailable |
+| 28 | Group 7 Member | `N/A` | GitHub Unavailable |

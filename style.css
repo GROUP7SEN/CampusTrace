@@ -403,6 +403,8 @@ textarea { resize: vertical; min-height: 90px; }
 }
 
 .feed-card {
+  position: relative;
+  overflow: hidden;
   background: var(--surface);
   padding: 20px;
   display: flex;
@@ -415,9 +417,28 @@ textarea { resize: vertical; min-height: 90px; }
 .feed-card.missing { border-left: 3px solid #555; }
 .feed-card.found   { border-left: 3px solid #444; }
 .feed-card.resolved {
-  opacity: 0.45;
-  border-left: 3px solid var(--border);
-  background: var(--bg);
+  opacity: 0.7;
+  border-left: 3px solid #4ade80 !important;
+  background: var(--surface);
+}
+
+/* ── Corner Ribbon Mask Overlay for Resolved Cards ── */
+.card-resolved-ribbon {
+  position: absolute;
+  top: 18px;
+  right: -36px;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 4px 38px;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  z-index: 10;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 /* ── Feed Card anatomy ── */

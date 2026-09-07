@@ -164,9 +164,8 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
             <div>
               <h2>User Accounts & Permissions</h2>
-              <p class="subtitle" style="margin-bottom: 0;">View, edit, suspend, reset passwords, or register new user accounts.</p>
+              <p class="subtitle" style="margin-bottom: 0;">View, suspend/activate, or permanently delete student accounts.</p>
             </div>
-            <button onclick="openAddUserModal()" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem;">+ Add New User</button>
           </div>
 
           <div class="filter-bar">
@@ -637,7 +636,7 @@
         if (em && !deletedSet.has(em)) {
           userMap.set(em, {
             name: u.name || 'Student User',
-            matric: u.matric || 'N/A',
+            matric: (u.matric || 'N/A').toUpperCase(),
             email: em,
             whatsapp: u.whatsapp || 'N/A',
             contactPref: u.contactPref || 'both',
@@ -655,7 +654,7 @@
           const existing = userMap.get(em) || {};
           userMap.set(em, {
             name: u.name || existing.name || 'Student User',
-            matric: u.matric || existing.matric || 'N/A',
+            matric: (u.matric || existing.matric || 'N/A').toUpperCase(),
             email: em,
             whatsapp: u.whatsapp || existing.whatsapp || 'N/A',
             contactPref: u.contactPref || existing.contactPref || 'both',
@@ -749,12 +748,10 @@
             </td>
             <td data-label="Actions" style="text-align: right;">
               <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
-                <button onclick="openEditUserModal('${u.email}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">✏️ Edit</button>
-                <button onclick="toggleUserStatus('${u.email}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem; color:${isSuspended ? '#4ade80' : '#fbbf24'} !important;">
+                <button onclick="toggleUserStatus('${u.email}')" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem; color:${isSuspended ? '#4ade80' : '#fbbf24'} !important;">
                   ${isSuspended ? '✅ Activate' : '🔒 Suspend'}
                 </button>
-                <button onclick="resetUserPassword('${u.email}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">🔑 Pwd</button>
-                <button onclick="deleteUserAccount('${u.email}')" class="btn btn-danger-soft" style="padding: 4px 8px; font-size: 0.75rem;">🗑️ Delete</button>
+                <button onclick="deleteUserAccount('${u.email}')" class="btn btn-danger-soft" style="padding: 4px 10px; font-size: 0.75rem;">🗑️ Delete</button>
               </div>
             </td>
           </tr>
@@ -807,7 +804,7 @@
       const mode = document.getElementById('admin-user-edit-mode').value;
       const targetEmail = (document.getElementById('adm-u-target-email').value || document.getElementById('adm-u-email').value).trim().toLowerCase();
       const name = document.getElementById('adm-u-name').value.trim();
-      const matric = document.getElementById('adm-u-matric').value.trim();
+      const matric = document.getElementById('adm-u-matric').value.trim().toUpperCase();
       const email = (document.getElementById('adm-u-email').value.trim() || targetEmail).toLowerCase();
       const whatsapp = document.getElementById('adm-u-whatsapp').value.trim();
       const contactPref = document.getElementById('adm-u-contact-pref').value;
@@ -817,7 +814,7 @@
       if (name.length < 3) return showToast('Name must be at least 3 characters.', 'warning');
       if (whatsapp.length < 10) return showToast('Enter a valid WhatsApp number.', 'warning');
 
-      const userData = { name, matric, email, whatsapp, contactPref, status, role: 'student' };
+      const userData = { name, matric: matric.toUpperCase(), email: email.toLowerCase(), whatsapp, contactPref, status, role: 'student' };
 
       // Preserve existing password if not updated
       const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
