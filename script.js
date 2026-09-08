@@ -15,8 +15,8 @@ const storage = firebase.storage();
 
 // Hamburger Mobile Menu Toggle
 document.addEventListener('DOMContentLoaded', () => {
-  const hamburgerBtn = document.getElementById('hamburger-btn');
-  const navMenu = document.getElementById('nav-menu');
+ const hamburgerBtn = document.getElementById('hamburger-btn');
+const navMenu = document.querySelector('.nav-links');
   if (hamburgerBtn && navMenu) {
     hamburgerBtn.addEventListener('click', () => {
       hamburgerBtn.classList.toggle('open');
