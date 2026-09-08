@@ -36,7 +36,8 @@ CampusTrace is designed and developed by Group 7 (28 Members) for SEN106/216 at 
 | 18 | Mosekola Peter | `@peter123-ctrl` | Printing |
 | 19 | Atoyebi David | `@SnippetAlpha` | QA testing |
 | 20 | Tijani Tawakalit | `@UmmuFaysol` | Report writing/documentation |
-| 21 | Ojo Oluwademilade | `@ojooluwademilade50` | UI, testing |
+| 21 | Ojo Oluwademilade | `@ojooluwademilade50` |  testing |
 | 22 | Kareem Shijuola Samuel | `@maverick-mdev` | HTML and CSS |
 | 23 | Esan Allen Olatomiwa | `@Paradoxdreamer` | Testing |
 | 24 | Deeyah Victor | `@noobieCreator737` | HTML and CSS |
+| 25 | Awe Precious  | `@precious67`  | UI/UX |
