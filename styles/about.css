@@ -172,3 +172,9 @@
   color: var(--text-muted);
   line-height: 1.5;
 }
+@media (max-width: 768px) {
+  .nav-links.active {
+    display: flex;
+    flex-direction: column;
+  }
+}
