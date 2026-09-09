@@ -732,13 +732,3 @@ document.getElementById('logoutBtn')?.addEventListener('click', () => {
   localStorage.clear();
   window.location.href = 'login.html';
 });
-// Mobile Navbar Menu Toggle
-const hamburgerBtn = document.getElementById('hamburger-btn');
-const navMenu = document.getElementById('nav-menu');
-
-if (hamburgerBtn && navMenu) {
-  hamburgerBtn.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    hamburgerBtn.classList.toggle('open');
-  });
-}
